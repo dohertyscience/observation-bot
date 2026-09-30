@@ -528,6 +528,12 @@ html[data-theme="dark"] .sess-timer.ok { color: #9fe0b3; } html[data-theme="dark
 .unsaved-pill { font-family: var(--mono); font-size: 0.55rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; background: var(--ok-bg); color: var(--algae-deep); border-radius: 999px; padding: 0.2rem 0.5rem; }
 .unsaved-pill.dirty { background: var(--no-bg); color: var(--coral-deep); }
 #leaveModal { z-index: 88; }
+.back-head { display: flex; gap: 0.7rem; align-items: center; margin-bottom: 0.5rem; }
+.back-icon { width: 46px; height: 46px; border-radius: 14px; background: var(--abyss); display: grid; place-items: center; flex-shrink: 0; } .back-icon svg { width: 26px; height: 26px; }
+.back-title { font-family: var(--display); font-size: 1.15rem; color: var(--text); line-height: 1.2; }
+.back-text { font-weight: 600; color: var(--text2); line-height: 1.5; margin: 0.3rem 0 0.6rem; }
+.back-steps { margin: 0 0 0.8rem 1.2rem; padding: 0; font-weight: 600; color: var(--text2); line-height: 1.55; font-size: 0.92rem; } .back-steps li { margin-bottom: 0.15rem; }
+.back-foot { text-align: center; margin-top: 0.7rem; font-size: 0.8rem; font-weight: 700; } .back-foot a { color: var(--grey); }
 .fs-status { font-size: 0.74rem; font-weight: 700; color: var(--grey); line-height: 1.4; margin-top: 0.2rem; } .fs-status a { color: var(--shallow); }
 .fs-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--grey); margin-right: 0.35rem; vertical-align: middle; } .fs-dot.on { background: var(--algae); box-shadow: 0 0 0 3px rgba(74,124,89,0.25); }
 @media (min-width: 901px) and (max-height: 860px) { .bot-stage { width: 110px; height: 110px; } .badges { display: none; } .hq-note { display: none; } .scorecard p { display: none; } .ring-row { grid-template-columns: 70px 1fr; } .ring { width: 70px; height: 70px; } .mstat { flex-direction: row; padding: 0.15rem 0.45rem; font-size: 0.72rem; } .mstats { margin-top: 0.35rem !important; } .tier { padding: 0.16rem 0.4rem; font-size: 0.74rem; } .tiers { gap: 0.22rem; } .rail { gap: 0.45rem; } .workspace { padding: 0.5rem 0.8rem 0.4rem; } .fs-status { font-size: 0.68rem; } .dock { padding: 0.45rem 0.7rem 0.55rem; } .bubble { font-size: 0.8rem; } }
@@ -655,15 +661,24 @@ html[data-theme="dark"] .sess-timer.ok { color: #9fe0b3; } html[data-theme="dark
         <h2 class="title">Become an expert observer</h2>
         <p class="lede">Bring one observation statement at a time from your Virtual Trips log. I score it 1 to 5, ask you questions, and you revise until it is sharp. I never write it for you.</p>
         <div class="gate" id="gate">
-          <label class="gate-lbl" for="gateName">First, who is observing today?</label>
-          <div class="gate-row">
-            <input type="text" id="gateName" maxlength="40" autocomplete="off" placeholder="Type your full name">
-            <button class="btn primary" id="btnGateGo" disabled>That&rsquo;s me</button>
+          <div id="gateNew">
+            <label class="gate-lbl" for="gateName">First, who is observing today?</label>
+            <div class="gate-row">
+              <input type="text" id="gateName" maxlength="40" autocomplete="off" placeholder="Type your full name">
+              <button class="btn primary" id="btnGateGo" disabled>That&rsquo;s me</button>
+            </div>
+            <div class="gate-or"><span>or</span></div>
+            <div style="text-align:center"><button class="btn secondary" id="btnGateLoad">Load a past scorecard (PDF) to pick up where you left off</button></div>
+            <button id="btnGateContinue" style="display:none"></button><button id="btnGateResume" style="display:none"></button>
           </div>
-          <div class="gate-or"><span>or</span></div>
-          <div style="text-align:center"><button class="btn secondary" id="btnGateLoad">Load a past scorecard (PDF) to pick up where you left off</button></div>
-          <div style="text-align:center;margin-top:0.5rem"><button class="btn success" id="btnGateContinue" style="display:none">Continue from your scorecard</button></div>
-          <div style="text-align:center;margin-top:0.5rem;display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap"><button class="btn success" id="btnGateResume" style="display:none">Resume last session</button><button class="btn ghost sm" id="btnGateFresh" style="display:none">Not you? Start fresh</button></div>
+          <div id="gateBack" style="display:none">
+            <div class="back-head"><div class="back-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fdfaf3" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg></div><div><div class="eyebrow">Welcome back</div><h3 class="back-title" id="backTitle">Pick up where you left off</h3></div></div>
+            <p class="back-text" id="backText"></p>
+            <ol class="back-steps" id="backSteps"><li>Press <b>Grant access</b> below.</li><li>Chrome will ask once: choose <b>Allow</b> (or <b>Edit file</b>).</li><li>Your log comes back and the scorecard keeps saving itself.</li></ol>
+            <div class="actions" style="justify-content:center"><button class="btn success" id="btnGrant">Grant access and continue</button></div>
+            <div class="back-foot"><a href="#" id="btnGateFresh">Not you? Start fresh on this device</a></div>
+            <div class="access-err" id="backErr" style="text-align:center"></div>
+          </div>
         </div>
         <div class="pick locked" id="pick">
         <div class="loc-grid" id="locGrid">
@@ -2353,10 +2368,9 @@ async function fsContinue() {
   return ok;
 }
 $('btnAutosave').addEventListener('click', async () => { if (FS.handle && await fsPermission(FS.handle, true)) { toast('Autosave is on.'); if (saveState.dirty > 0) saveScorecard('', { gesture: true }); } });
-$('btnGateContinue').addEventListener('click', async () => { if (!(await fsContinue())) { toast('Permission was not granted.'); return; } try { const file = await FS.handle.getFile(); await loadScorecard(file); refreshFsUI(); } catch (e) { console.error(e); toast('That file could not be read.'); } });
 (async () => {
   refreshFsUI();
-  if (FS.supported) { FS.stored = await fsGet(); refreshLinkUI(); if (FS.stored && !(typeof readBackup === 'function' && readBackup())) { $('btnGateContinue').style.display = ''; $('btnGateContinue').textContent = `Continue from ${FS.stored.name}`; } }
+  if (FS.supported) { FS.stored = await fsGet(); } FS._checked = true; refreshLinkUI();
 })();
 /* ============================================================
    LOCAL BACKUP: instant, no server, for the forgetful student and the dead battery.
@@ -2378,29 +2392,56 @@ const _markDirty = markDirty; markDirty = function (n) { _markDirty(n); backupNo
 const _saveScorecard = saveScorecard; saveScorecard = async function (why, opts) { const r = await _saveScorecard(why, opts); backupNow(); return r; };
 const _importState = importState; importState = function (data) { const n = _importState(data); backupNow(); return n; };
 $('name').addEventListener('change', backupNow);
-/* offer to resume on the name screen */
-(function () {
+/* welcome-back screen: one button, one explanation, one browser prompt */
+function showBack(b, file) {
+  $('gateNew').style.display = 'none'; $('gateBack').style.display = '';
+  const name = (b && b.name) || (() => { try { return localStorage.getItem(LS_NAME) || ''; } catch (e) { return ''; } })();
+  $('backTitle').textContent = name ? `Welcome back, ${name.split(' ')[0]}` : 'Pick up where you left off';
+  const n = b ? b.observations.length : null, when = b ? new Date(b.savedAt) : null;
+  const whenTxt = when ? `${when.toLocaleDateString([], { month: 'short', day: 'numeric' })} at ${when.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}` : '';
+  if (file) {
+    $('backText').innerHTML = `Your scorecard <b>${esc(file.name)}</b> was linked on this device${n !== null ? ` (${n} observation${n === 1 ? '' : 's'}, last saved ${whenTxt})` : ''}. Chrome protects your files, so this page has to ask before it can keep saving into that one.`;
+    $('backSteps').style.display = ''; $('btnGrant').textContent = 'Grant access and continue';
+  } else {
+    $('backText').innerHTML = `A session was saved on this device${n !== null ? `: ${n} observation${n === 1 ? '' : 's'}, last saved ${whenTxt}` : ''}. No file is linked yet, so nothing to grant; just continue.`;
+    $('backSteps').style.display = 'none'; $('btnGrant').textContent = 'Continue';
+  }
+  $('backErr').textContent = '';
+}
+function showNew() { $('gateNew').style.display = ''; $('gateBack').style.display = 'none'; }
+(async function () {
   const b = readBackup(), nm = (() => { try { return localStorage.getItem(LS_NAME) || ''; } catch (e) { return ''; } })();
   if (nm && !$('gateName').value) { $('gateName').value = nm; $('btnGateGo').disabled = nm.trim().length < 2; }
-  if (!b) return;
-  const when = new Date(b.savedAt); const dirty = b.dirty > 0;
-  $('btnGateResume').style.display = ''; $('btnGateFresh').style.display = '';
-  $('btnGateResume').innerHTML = `Continue as ${esc(b.name || 'last observer')} &middot; ${b.observations.length} observation${b.observations.length === 1 ? '' : 's'} &middot; saved ${when.toLocaleDateString([], { month: 'short', day: 'numeric' })} ${when.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}${dirty ? ' &middot; ' + b.dirty + ' not yet in a scorecard' : ''}${b.file ? ' &middot; ' + esc(b.file) : ''}`;
+  /* the file handle loads asynchronously; wait for it so the screen is right the first time */
+  if (typeof FS !== 'undefined' && FS.supported) { for (let i = 0; i < 20 && FS.stored === null && !FS._checked; i++) await new Promise(r => setTimeout(r, 50)); }
+  const file = (typeof FS !== 'undefined' && FS.supported) ? FS.stored : null;
+  if (b || file) showBack(b, file);
 })();
-$('btnGateResume').addEventListener('click', async () => {
-  const b = readBackup(); if (!b) return;
-  if (!$('name').value.trim()) $('name').value = b.name || '';
+$('btnGrant').addEventListener('click', async () => {
+  const b = readBackup(); const file = (typeof FS !== 'undefined' && FS.supported) ? FS.stored : null;
+  $('btnGrant').disabled = true; $('backErr').textContent = '';
   let fileMsg = '';
-  if (typeof FS !== 'undefined' && FS.supported && FS.stored) { const ok = await fsContinue(); fileMsg = ok ? ` Your scorecard ${FS.handle.name} is connected and will keep saving itself.` : ' I could not get permission for your scorecard file; use "Turn on autosave" when you are ready.'; }
-  unlockGate('load');
-  const n = importState(b);
-  if (b.loc && LOCATIONS[b.loc]) state.loc = b.loc;
-  saveState.dirty = b.dirty || 0; refreshSaveUI();
-  if (typeof refreshFsUI === 'function') refreshFsUI();
-  setMood('happy'); say(`Welcome back${b.name ? ', ' + b.name.split(' ')[0] : ''}! I restored ${n} observation${n === 1 ? '' : 's'} from this device.${fileMsg}${b.dirty && !fileMsg ? ' ' + (b.dirty === 1 ? 'One of them is' : b.dirty + ' of them are') + ' not in a scorecard yet, so save one when you get a chance.' : ''}`);
-  if (typeof fsAutosave === 'function' && saveState.dirty > 0) fsAutosave();
+  if (file) {
+    const ok = await fsContinue();
+    if (!ok) { $('backErr').textContent = 'Chrome did not grant access. Press the button again and choose Allow, or start fresh below.'; $('btnGrant').disabled = false; return; }
+    fileMsg = ` Your scorecard ${FS.handle.name} is connected and will keep saving itself.`;
+  }
+  if (b) {
+    if (!$('name').value.trim()) $('name').value = b.name || '';
+    unlockGate('load');
+    const n = importState(b);
+    if (b.loc && LOCATIONS[b.loc]) state.loc = b.loc;
+    saveState.dirty = b.dirty || 0; refreshSaveUI();
+    if (typeof refreshFsUI === 'function') refreshFsUI();
+    setMood('happy'); say(`Welcome back${b.name ? ', ' + b.name.split(' ')[0] : ''}! I restored ${n} observation${n === 1 ? '' : 's'} from this device.${fileMsg}`);
+    if (typeof fsAutosave === 'function' && saveState.dirty > 0) fsAutosave();
+  } else if (file) {
+    try { const f = await FS.handle.getFile(); await loadScorecard(f); if (typeof refreshFsUI === 'function') refreshFsUI(); }
+    catch (e) { console.error(e); $('backErr').textContent = 'That file could not be read. Start fresh and load it manually.'; $('btnGrant').disabled = false; return; }
+  }
+  $('btnGrant').disabled = false;
 });
-$('btnGateFresh').addEventListener('click', async () => { if (confirm('Start fresh on this device? This clears the saved session and unlinks the scorecard file here. The file itself is not deleted.')) { clearBackup(); if (typeof fsDel === 'function') { await fsDel(); FS.handle = null; FS.stored = null; FS.perm = 'none'; refreshFsUI(); } $('btnGateContinue').style.display = 'none'; $('btnGateResume').style.display = 'none'; $('btnGateFresh').style.display = 'none'; $('gateName').value = ''; $('btnGateGo').disabled = true; try { localStorage.removeItem(LS_NAME); } catch (e) {} } });
+$('btnGateFresh').addEventListener('click', async e => { e.preventDefault(); if (confirm('Start fresh on this device? This clears the saved session and unlinks the scorecard file here. The file itself is not deleted.')) { clearBackup(); try { localStorage.removeItem(LS_NAME); } catch (e) {} if (typeof fsDel === 'function') { await fsDel(); FS.handle = null; FS.stored = null; FS.perm = 'none'; refreshFsUI(); } $('gateName').value = ''; $('btnGateGo').disabled = true; showNew(); } });
 
 document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.hidden = true; }));
 document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-overlay').forEach(m => m.hidden = true); });
