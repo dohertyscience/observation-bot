@@ -1460,9 +1460,19 @@ const USAGE = { calls: 0, input: 0, cacheWrite: 0, cacheRead: 0, output: 0 };
 if (typeof window !== 'undefined') window.__usage = USAGE;
 /* every call goes through the relay: text/plain body avoids a CORS preflight, which Apps Script cannot answer */
 async function relay(body) {
-  const res = await fetch(RELAY_URL, { method: 'POST', headers: { 'content-type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body), redirect: 'follow' });
-  if (!res.ok) throw new Error('Relay ' + res.status);
-  const data = await res.json();
+  /* no explicit content-type: Chrome keeps an explicit header across Apps Script's POST->GET redirect and the echo page then 404s at random.
+     A string body still goes as text/plain (no preflight). One or two retries cover the rare echo hiccup. */
+  let data = null, lastErr = null;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const res = await fetch(RELAY_URL, { method: 'POST', body: JSON.stringify(body), redirect: 'follow' });
+      const txt = await res.text();
+      if (res.ok && txt.trim().startsWith('{')) { data = JSON.parse(txt); break; }
+      lastErr = new Error('Relay ' + res.status);
+    } catch (e) { lastErr = e; }
+    await new Promise(r => setTimeout(r, 400 * (attempt + 1)));
+  }
+  if (!data) throw lastErr || new Error('Relay failed');
   if (data.error) {
     if (data.error === 'access') { const e = new Error('access'); e.access = data.why; throw e; }
     if (data.error === 'rate') throw new Error('The class hit the grading limit for now. Ask your teacher.');
