@@ -643,6 +643,7 @@ html[data-theme="dark"] .sess-timer.ok { color: #9fe0b3; } html[data-theme="dark
         <div class="fs-status" id="fsStatus"></div>
         <div class="fs-status" id="lsStatus"></div>
         <div class="fs-status" id="linkNote" style="display:none"></div>
+        <button class="btn ghost sm" id="btnFreshRail" style="display:none">Not you? Start fresh on this device</button>
         <input type="file" id="pdfFile" accept="application/pdf,.pdf" style="display:none">
       </div>
     </div>
@@ -675,7 +676,7 @@ html[data-theme="dark"] .sess-timer.ok { color: #9fe0b3; } html[data-theme="dark
             <div class="back-head"><div class="back-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fdfaf3" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg></div><div><div class="eyebrow">Welcome back</div><h3 class="back-title" id="backTitle">Pick up where you left off</h3></div></div>
             <p class="back-text" id="backText"></p>
             <ol class="back-steps" id="backSteps"><li>Press <b>Grant access</b> below.</li><li>Chrome will ask once: choose <b>Allow</b> (or <b>Edit file</b>).</li><li>Your log comes back and the scorecard keeps saving itself.</li></ol>
-            <div class="actions" style="justify-content:center"><button class="btn success" id="btnGrant">Grant access and continue</button></div>
+            <div class="actions" style="justify-content:center"><button class="btn success" id="btnGrant">Grant access and continue</button><button class="btn ghost" id="btnBackLoad" style="display:none">Load a scorecard file instead</button></div>
             <div class="back-foot"><a href="#" id="btnGateFresh">Not you? Start fresh on this device</a></div>
             <div class="access-err" id="backErr" style="text-align:center"></div>
           </div>
@@ -2406,7 +2407,7 @@ function showBack(b, file) {
     $('backText').innerHTML = `A session was saved on this device${n !== null ? `: ${n} observation${n === 1 ? '' : 's'}, last saved ${whenTxt}` : ''}. No file is linked yet, so nothing to grant; just continue.`;
     $('backSteps').style.display = 'none'; $('btnGrant').textContent = 'Continue';
   }
-  $('backErr').textContent = '';
+  $('backErr').textContent = ''; $('btnBackLoad').style.display = 'none'; delete $('btnGrant').dataset.mode;
 }
 function showNew() { $('gateNew').style.display = ''; $('gateBack').style.display = 'none'; }
 (async function () {
@@ -2415,16 +2416,38 @@ function showNew() { $('gateNew').style.display = ''; $('gateBack').style.displa
   /* the file handle loads asynchronously; wait for it so the screen is right the first time */
   if (typeof FS !== 'undefined' && FS.supported) { for (let i = 0; i < 20 && FS.stored === null && !FS._checked; i++) await new Promise(r => setTimeout(r, 50)); }
   const file = (typeof FS !== 'undefined' && FS.supported) ? FS.stored : null;
-  if (b || file) showBack(b, file);
+  if (!(b || file)) return;
+  /* test the file first: already allowed and still there -> resume silently; allowed but gone -> say so; not yet allowed -> ask */
+  if (file) {
+    const probe = await probeFile(file);
+    if (probe === 'ok') { await resumeSession(true); return; }
+    if (probe === 'missing') { showMissing(b, file); return; }
+  }
+  showBack(b, file);
 })();
-$('btnGrant').addEventListener('click', async () => {
+/* 'ok' = readable now, 'missing' = handle points at a moved/renamed/deleted file, 'ask' = Chrome needs to prompt first */
+async function probeFile(h) {
+  try { if ((await h.queryPermission({ mode: 'readwrite' })) !== 'granted') return 'ask'; } catch (e) { return 'ask'; }
+  try { await h.getFile(); return 'ok'; } catch (e) { return (e && (e.name === 'NotFoundError' || e.name === 'NotAllowedError' || e.name === 'InvalidStateError')) ? 'missing' : 'ask'; }
+}
+function showMissing(b, file) {
+  $('gateNew').style.display = 'none'; $('gateBack').style.display = '';
+  const name = (b && b.name) || '';
+  $('backTitle').textContent = name ? `Welcome back, ${name.split(' ')[0]}` : 'Welcome back';
+  $('backText').innerHTML = `Your scorecard <b>${esc(file.name)}</b> was linked on this device, but it cannot be found now. It may have been moved, renamed, or deleted.` + (b ? ` This device still has a copy of your session (${b.observations.length} observation${b.observations.length === 1 ? '' : 's'}), so nothing is lost.` : '');
+  $('backSteps').style.display = 'none'; $('backErr').textContent = '';
+  $('btnGrant').textContent = b ? 'Continue from this device and save a new file' : 'Load my scorecard file';
+  $('btnGrant').dataset.mode = b ? 'missing-backup' : 'missing-load';
+  $('btnBackLoad').style.display = b ? '' : 'none';
+}
+async function resumeSession(auto) {
   const b = readBackup(); const file = (typeof FS !== 'undefined' && FS.supported) ? FS.stored : null;
-  $('btnGrant').disabled = true; $('backErr').textContent = '';
   let fileMsg = '';
   if (file) {
     const ok = await fsContinue();
-    if (!ok) { $('backErr').textContent = 'Chrome did not grant access. Press the button again and choose Allow, or start fresh below.'; $('btnGrant').disabled = false; return; }
-    fileMsg = ` Your scorecard ${FS.handle.name} is connected and will keep saving itself.`;
+    if (!ok) return false;
+    try { await FS.handle.getFile(); fileMsg = ` Your scorecard ${FS.handle.name} is connected and will keep saving itself.`; }
+    catch (e) { if (b) { showMissing(b, file); return 'missing'; } await fsDel(); FS.handle = null; FS.stored = null; FS.perm = 'none'; fileMsg = ' Your old scorecard file could not be found, so the next save will ask where to put a new one.'; }
   }
   if (b) {
     if (!$('name').value.trim()) $('name').value = b.name || '';
@@ -2433,15 +2456,31 @@ $('btnGrant').addEventListener('click', async () => {
     if (b.loc && LOCATIONS[b.loc]) state.loc = b.loc;
     saveState.dirty = b.dirty || 0; refreshSaveUI();
     if (typeof refreshFsUI === 'function') refreshFsUI();
-    setMood('happy'); say(`Welcome back${b.name ? ', ' + b.name.split(' ')[0] : ''}! I restored ${n} observation${n === 1 ? '' : 's'} from this device.${fileMsg}`);
-    if (typeof fsAutosave === 'function' && saveState.dirty > 0) fsAutosave();
+    setMood('happy'); say(`Welcome back${b.name ? ', ' + b.name.split(' ')[0] : ''}! I restored ${n} observation${n === 1 ? '' : 's'} from this device.${fileMsg}${auto ? ' Not you? Use "Start fresh" in the Scorecard card.' : ''}`);
+    if (typeof fsAutosave === 'function' && saveState.dirty > 0) setTimeout(fsAutosave, 4000);
   } else if (file) {
-    try { const f = await FS.handle.getFile(); await loadScorecard(f); if (typeof refreshFsUI === 'function') refreshFsUI(); }
-    catch (e) { console.error(e); $('backErr').textContent = 'That file could not be read. Start fresh and load it manually.'; $('btnGrant').disabled = false; return; }
+    try { const f = await FS.handle.getFile(); await loadScorecard(f); if (typeof refreshFsUI === 'function') refreshFsUI(); } catch (e) { console.error(e); return false; }
   }
-  $('btnGrant').disabled = false;
+  $('btnFreshRail').style.display = '';
+  return true;
+}
+$('btnGrant').addEventListener('click', async () => {
+  $('btnGrant').disabled = true; $('backErr').textContent = '';
+  const mode = $('btnGrant').dataset.mode || '';
+  if (mode === 'missing-backup') { await fsDel(); FS.handle = null; FS.stored = null; FS.perm = 'none'; const ok = await resumeSession(false); if (ok === true) { refreshFsUI(); setTimeout(() => say('Your old file is gone, so your next save will ask where to put a new one. Everything else is here.'), 2500); } }
+  else if (mode === 'missing-load') { await fsDel(); FS.handle = null; FS.stored = null; FS.perm = 'none'; showNew(); if (FS.supported) fsOpen(); else $('pdfFile').click(); }
+  else { const ok = await resumeSession(false); if (ok === false) $('backErr').textContent = 'Chrome did not grant access. Press the button again and choose Allow, or start fresh below.'; }
+  $('btnGrant').disabled = false; delete $('btnGrant').dataset.mode;
 });
-$('btnGateFresh').addEventListener('click', async e => { e.preventDefault(); if (confirm('Start fresh on this device? This clears the saved session and unlinks the scorecard file here. The file itself is not deleted.')) { clearBackup(); try { localStorage.removeItem(LS_NAME); } catch (e) {} if (typeof fsDel === 'function') { await fsDel(); FS.handle = null; FS.stored = null; FS.perm = 'none'; refreshFsUI(); } $('gateName').value = ''; $('btnGateGo').disabled = true; showNew(); } });
+$('btnBackLoad').addEventListener('click', async () => { await fsDel(); FS.handle = null; FS.stored = null; FS.perm = 'none'; showNew(); if (FS.supported) fsOpen(); else $('pdfFile').click(); });
+async function startFresh() {
+  if (!confirm('Start fresh on this device? This clears the saved session and unlinks the scorecard file here. The file itself is not deleted.')) return;
+  clearBackup(); try { localStorage.removeItem(LS_NAME); } catch (e) {}
+  if (typeof fsDel === 'function') { await fsDel(); FS.handle = null; FS.stored = null; FS.perm = 'none'; }
+  location.reload();
+}
+$('btnFreshRail').addEventListener('click', startFresh);
+$('btnGateFresh').addEventListener('click', e => { e.preventDefault(); startFresh(); });
 
 document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.hidden = true; }));
 document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-overlay').forEach(m => m.hidden = true); });
