@@ -638,6 +638,14 @@ body::before { display: none; }
 #appBg .lp-scene { right: -2vw; bottom: -3vh; width: min(62vw, 900px); }
 #appBg .lp-balloon { animation-delay: -62s, 0s !important; }
 
+/* look at your scorecard before you even have a code */
+.lp-view { margin-top: 0.9rem; padding-top: 0.9rem; border-top: 2px dashed var(--card-line); display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
+.lp-viewbtn { font-family: var(--display); font-weight: 600; font-size: 0.95rem; color: var(--abyss); background: #fff; border: 2px solid var(--card-line); border-radius: 12px; padding: 0.5rem 0.9rem; cursor: pointer; box-shadow: 0 3px 0 var(--card-line); transition: transform .12s, box-shadow .12s; }
+.lp-viewbtn:hover { transform: translateY(-1px); box-shadow: 0 4px 0 var(--card-line); } .lp-viewbtn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--card-line); }
+.lp-viewbtn:disabled { opacity: .6; cursor: default; transform: none; }
+.lp-viewnote { font-size: 0.85rem; color: var(--mid); }
+#previewModal.over-landing { z-index: 90; }
+
 .sess-timer { font-family: var(--mono); font-size: 0.6rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 0.15rem; min-height: 0.9rem; color: var(--grey); }
 .sess-timer.ok { color: var(--algae-deep); } .sess-timer.warn { color: var(--coral-deep); animation: stepPulse 1s ease-in-out infinite; } .sess-timer.over { color: var(--coral-deep); } .sess-timer.admin { color: var(--sun-deep); }
 html[data-theme="dark"] .sess-timer.ok { color: #9fe0b3; } html[data-theme="dark"] .sess-timer.warn, html[data-theme="dark"] .sess-timer.over { color: #ffb39c; }
@@ -652,7 +660,7 @@ html[data-theme="dark"] .sess-timer.ok { color: #9fe0b3; } html[data-theme="dark
 .back-foot { text-align: center; margin-top: 0.7rem; font-size: 0.8rem; font-weight: 700; } .back-foot a { color: var(--grey); }
 .fs-status { font-size: 0.74rem; font-weight: 700; color: var(--grey); line-height: 1.4; margin-top: 0.2rem; } .fs-status a { color: var(--shallow); }
 .fs-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--grey); margin-right: 0.35rem; vertical-align: middle; } .fs-dot.on { background: var(--algae); box-shadow: 0 0 0 3px rgba(74,124,89,0.25); }
-@media (min-width: 901px) and (max-height: 960px) { .bot-stage { width: 110px; height: 110px; } .badges { display: none; } .hq-note { display: none; } .scorecard p { display: none; } .ring-row { grid-template-columns: 70px 1fr; } .ring { width: 70px; height: 70px; } .mstat { flex-direction: row; padding: 0.15rem 0.45rem; font-size: 0.72rem; } .mstats { margin-top: 0.35rem !important; } .tier { padding: 0.16rem 0.4rem; font-size: 0.74rem; } .tiers { gap: 0.22rem; } .rail { gap: 0.45rem; } .workspace { padding: 0.5rem 0.8rem 0.4rem; } .fs-status { font-size: 0.68rem; } .dock { padding: 0.45rem 0.7rem 0.55rem; } .bubble { font-size: 0.8rem; } }
+@media (min-width: 901px) and (max-height: 960px) { .bot-stage { width: 110px; height: 110px; }  .hq-note { display: none; } .scorecard p { display: none; } .ring-row { grid-template-columns: 70px 1fr; } .ring { width: 70px; height: 70px; } .mstat { flex-direction: row; padding: 0.15rem 0.45rem; font-size: 0.72rem; } .mstats { margin-top: 0.35rem !important; } .tier { padding: 0.16rem 0.4rem; font-size: 0.74rem; } .tiers { gap: 0.22rem; } .rail { gap: 0.45rem; } .workspace { padding: 0.5rem 0.8rem 0.4rem; } .fs-status { font-size: 0.68rem; } .dock { padding: 0.45rem 0.7rem 0.55rem; } .bubble { font-size: 0.8rem; } }
 @media (min-width: 901px) and (max-height: 740px) { .bot-stage { width: 92px; height: 92px; } .mood-tag { display: none; } }
 /* ============================================================
    ATLAS SKIN: the bot as an extension of Atlas (field-journal look)
@@ -788,6 +796,42 @@ h2.title { font-weight: 600; color: var(--abyss); }
 @media (max-width: 900px) { .app-shell { flex-direction: column; height: auto; } .rail { width: auto; flex: none; height: auto; position: static; } .content-rail { height: auto; } .stage { overflow: visible; } body { overflow: auto; } }
 @media (min-width: 901px) and (max-height: 960px) { .rail-head { padding: 0.6rem 0.3rem 0.2rem; } .brand .mini { width: 36px; height: 36px; } .brand h1 { font-size: 1.1rem; } }
 @media (min-width: 901px) and (max-height: 800px) { .rail { gap: 0.4rem; } .rail .card { padding: 0.5rem 0.7rem; } #lsStatus { display: none; } .rail-head { padding: 0.45rem 0.3rem 0.1rem; } .bubble { padding: 0.45rem 0.65rem; font-size: 0.78rem; } .mission h3, .scorecard h3 { margin-bottom: 0.25rem; } .rail-btns { margin-top: 0.4rem; gap: 0.3rem; } }
+/* ---- achievements: rail button with a red "new" dot, and the trophy wall modal ---- */
+.ach-btn { position: relative; width: 100%; margin-top: 0.55rem; display: flex; align-items: center; gap: 0.55rem; padding: 0.55rem 0.7rem; border-radius: 14px; border: 2px solid rgba(163,213,224,.25); background: rgba(163,213,224,.08); color: var(--shell); font-family: var(--display); font-weight: 600; font-size: 0.92rem; cursor: pointer; transition: transform .15s var(--ease-pop), background .15s, border-color .15s; }
+.ach-btn:hover { background: rgba(163,213,224,.16); border-color: rgba(163,213,224,.45); transform: translateY(-1px); }
+.ach-btn .ach-ic { width: 26px; height: 26px; border-radius: 9px; background: var(--sun); color: var(--abyss); display: grid; place-items: center; flex-shrink: 0; }
+.ach-btn .ach-ic svg { width: 17px; height: 17px; }
+.ach-btn .ach-lbl { flex: 1 1 auto; text-align: left; }
+.ach-btn .ach-count { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.05em; color: var(--foam); }
+.ach-btn .ach-dot { position: absolute; top: -7px; right: -6px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px; background: #e0463f; color: #fff; font-family: var(--mono); font-size: 0.68rem; font-weight: 800; display: grid; place-items: center; box-shadow: 0 0 0 2.5px var(--abyss); animation: popIn .5s var(--ease-pop); }
+.ach-btn .ach-dot[hidden] { display: none; }
+#achModal .modal { width: min(860px, 100%); }
+.ach-h { display: flex; align-items: baseline; justify-content: space-between; font-family: var(--display); font-weight: 700; font-size: 1.05rem; color: var(--abyss); margin: 0.2rem 0 0.6rem; }
+.ach-h span { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mid); }
+.ach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 0.6rem; margin-bottom: 1.1rem; }
+.ach { display: grid; grid-template-columns: 58px 1fr; gap: 0.7rem; align-items: center; padding: 0.65rem; border-radius: 16px; background: #fff; border: 2px solid var(--card-line); position: relative; }
+.ach .ach-badge { position: relative; width: 58px; height: 58px; border-radius: 16px; display: grid; place-items: center; background: var(--sky); color: #9fb5c4; border: 2px solid var(--card-line); }
+.ach .ach-badge svg { width: 30px; height: 30px; }
+.ach.done { border-color: rgba(246,196,83,.9); background: linear-gradient(135deg, #fffbea, #fff); }
+.ach.done .ach-badge { background: var(--sun); color: var(--abyss); border-color: #d8a92f; box-shadow: 0 3px 0 #d8a92f; }
+.ach.fresh { animation: popIn .5s var(--ease-pop); }
+.ach .ach-new { position: absolute; top: -8px; right: -10px; background: #e0463f; color: #fff; font-family: var(--mono); font-size: 0.58rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.15rem 0.4rem; border-radius: 999px; box-shadow: 0 0 0 2px #fff; }
+.ach .ach-name { font-family: var(--display); font-weight: 700; color: var(--abyss); font-size: 0.98rem; line-height: 1.15; }
+.ach .ach-how { font-size: 0.8rem; color: var(--deep); line-height: 1.3; margin-top: 0.1rem; }
+.ach .ach-bar { height: 6px; border-radius: 999px; background: rgba(6,34,62,.08); margin-top: 0.4rem; overflow: hidden; }
+.ach .ach-bar i { display: block; height: 100%; background: var(--shallow); border-radius: 999px; transition: width .5s var(--ease-pop); }
+.ach.done .ach-bar i { background: #d8a92f; }
+.ach .ach-meta { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--mid); margin-top: 0.3rem; }
+.ach.done .ach-meta { color: #a17a12; }
+.ach-foot { font-size: 0.8rem; color: var(--mid); text-align: center; }
+@media (min-width: 901px) and (max-height: 800px) { .ach-btn { padding: 0.4rem 0.6rem; font-size: 0.85rem; } }
+/* ---- location dropdown on a new observation, dressed like the chip it replaced ---- */
+.chip-select { position: relative; display: inline-flex; align-items: center; gap: 0.4rem; background: var(--sand); color: var(--abyss); border-radius: 99px; padding: 0.15rem 0.5rem 0.15rem 0.7rem; border: 2px solid transparent; cursor: pointer; transition: border-color .15s, transform .15s var(--ease-pop); }
+.chip-select:hover { border-color: var(--coral); transform: translateY(-1px); }
+.chip-select:focus-within { border-color: var(--shallow); box-shadow: 0 0 0 4px rgba(45,125,163,.18); }
+.chip-select .cs-lbl { font-family: var(--mono); font-size: 0.6rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mid); }
+.chip-select select { appearance: none; -webkit-appearance: none; background: transparent; border: 0; padding: 0.2rem 1.3rem 0.2rem 0; margin: 0; font-family: var(--display); font-weight: 700; font-size: 0.92rem; color: var(--abyss); cursor: pointer; outline: none; }
+.chip-select svg { position: absolute; right: 0.55rem; width: 14px; height: 14px; pointer-events: none; color: var(--coral); }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } }
 </style>
@@ -881,7 +925,7 @@ h2.title { font-weight: 600; color: var(--abyss); }
         <div class="mstat"><span>Attempts</span><b id="stTries">0</b></div>
         <div class="mstat"><span>Best</span><b id="stBest">&ndash;</b></div>
       </div>
-      <div class="badges" id="badges"></div>
+      <button class="ach-btn" id="btnAch" type="button"><span class="ach-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4a2 2 0 0 0 0 4h3M17 6h3a2 2 0 0 1 0 4h-3"/></svg></span><span class="ach-lbl">My achievements</span><span class="ach-count" id="achCount">0 / 0</span><span class="ach-dot" id="achDot" hidden></span></button>
     </div>
     <div class="card scorecard">
       <h3>My scorecard <span class="unsaved-pill" id="unsavedPill">saved</span></h3>
@@ -968,7 +1012,7 @@ h2.title { font-weight: 600; color: var(--abyss); }
       <div class="screen card panel" id="scr-write">
         <div class="write-head">
           <div><div class="eyebrow" id="writeEyebrow">Observation #1</div><h2 class="title" id="writeTitle">What did the camera see?</h2></div>
-          <div class="chipset" id="stopChips"><span class="chip static" id="locChip">Hawaii</span></div>
+          <div class="chipset" id="stopChips"></div>
         </div>
         <div class="coach" id="coach"><h4>Bot notes from your last try <span class="trail" id="coachTrail"></span></h4><ul id="coachList"></ul><div class="before" id="coachBefore"></div></div>
         <div class="notebook"><textarea id="obs" placeholder="One sentence. Exactly what did the camera see, and about how much..."></textarea></div>
@@ -1066,6 +1110,12 @@ h2.title { font-weight: 600; color: var(--abyss); }
       </div>
       <div class="modal-note">Level 5 is the best a 7th grader is expected to do in this assignment. Be highly descriptive, blend words with numbers or comparisons, and keep only what a camera could record.</div>
     </div>
+  </div>
+</div>
+<div class="modal-overlay" id="achModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head"><div><h3>My achievements</h3><div class="modal-sub" id="achSub">Every badge and award, and how to earn it</div></div><button class="modal-x" data-close="achModal" aria-label="Close">&times;</button></div>
+    <div class="modal-body" id="achBody"></div>
   </div>
 </div>
 <div class="modal-overlay" id="statsModal" hidden>
@@ -1208,6 +1258,7 @@ h2.title { font-weight: 600; color: var(--abyss); }
         </div>
         <div class="lp-msg" id="accessErr"></div>
         <div class="lp-hint">Lost your code? Ask your teacher.</div>
+        <div class="lp-view"><button type="button" class="lp-viewbtn" id="btnLpView">View my scorecard</button><span class="lp-viewnote" id="lpViewNote"></span></div>
       </div>
     </div>
   </div>
@@ -1475,15 +1526,75 @@ function renderChallenges() {
   state.tiers = new Set(earned);
   if (fresh.length && s.count) { const id = fresh[fresh.length - 1]; setTimeout(() => { toast(`${TIERS.find(t => t.id === id).name} unlocked!`); setMood(id === 'platinum' ? 'wow' : 'proud', 3000); say(TIER_LINES[id]); if (id !== 'goal') confetti(); }, 1600); }
 }
-const BADGE_DEFS = [
-  ['first', 'First check', s => s.attempts >= 1],
-  ['camera', 'Camera test x5', s => state.observations.filter(o => last(o).passesCameraTest).length >= 5],
-  ['blend', 'Blender', s => s.kinds.both >= 3],
-  ['climb', 'Climber', s => s.bestClimb >= 2],
-  ['five', 'Level 5', s => s.fives >= 1],
-  ['ten', '10 logged', s => s.count >= 10],
-  ['fifteen', '15 logged', s => s.count >= 15],
+/* ---------- achievements: every badge has a name, a way to earn it, a progress meter and an icon ---------- */
+const ACH_ICONS = {
+  first: '<path d="M20 6 9 17l-5-5"/>',
+  camera: '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+  blend: '<circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/>',
+  climb: '<path d="M3 20 9 9l4 6 3-4 5 9z"/><path d="M13 3v6M13 3l4 2-4 2"/>',
+  five: '<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/>',
+  ten: '<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h6M9 16h6"/>',
+  fifteen: '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4a2 2 0 0 0 0 4h3M17 6h3a2 2 0 0 1 0 4h-3"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>',
+  eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  revise: '<path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/>',
+  ruler: '<path d="m3 17 14-14 4 4L7 21z"/><path d="m7 9 2 2M10 6l2 2M13 3l2 2M4 12l2 2"/>',
+  medal: '<circle cx="12" cy="15" r="6"/><path d="M8.5 10 6 3h4l2 4 2-4h4l-2.5 7"/>',
+  gem: '<path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20M9 3l3 6 3-6M12 9l-4 12M12 9l4 12"/>',
+};
+const ACH = [
+  { id: 'first', name: 'First check', how: 'Check one observation.', prog: s => [Math.min(1, s.attempts), 1] },
+  { id: 'five', name: 'Level 5', how: 'Earn a level 5 on any observation.', prog: s => [Math.min(1, s.fives), 1] },
+  { id: 'camera', name: 'Camera eye', how: 'Pass the camera test on 5 observations.', prog: s => [Math.min(5, s.pass), 5] },
+  { id: 'blend', name: 'Blender', how: 'Mix words and numbers in 3 observations.', prog: s => [Math.min(3, s.kinds.both), 3] },
+  { id: 'ruler', name: 'Measure it', how: 'Use a number or comparison in 5 observations.', prog: s => [Math.min(5, s.kinds.both + s.kinds.quantitative), 5] },
+  { id: 'climb', name: 'Climber', how: 'Raise one observation by 2 levels through revising.', prog: s => [Math.min(2, s.bestClimb), 2] },
+  { id: 'revise', name: 'Never settle', how: 'Revise 5 different observations.', prog: s => [Math.min(5, s.revised), 5] },
+  { id: 'eye', name: 'Sharp eye', how: 'Earn 3 level 5s.', prog: s => [Math.min(3, s.fives), 3] },
+  { id: 'globe', name: 'Globetrotter', how: 'Log observations from 3 different places.', prog: s => [Math.min(3, s.places), 3] },
+  { id: 'ten', name: 'Ten logged', how: 'Log 10 observations.', prog: s => [Math.min(10, s.count), 10] },
+  { id: 'fifteen', name: 'Full log', how: 'Log all 15 observations.', prog: s => [Math.min(15, s.count), 15] },
 ];
+const ACH_SEEN_KEY = 'ohb-ach-seen';
+function achSeen() { try { return new Set(JSON.parse(localStorage.getItem(ACH_SEEN_KEY) || '[]')); } catch (e) { return new Set(); } }
+function achMarkSeen(ids) { try { localStorage.setItem(ACH_SEEN_KEY, JSON.stringify(Array.from(ids))); } catch (e) {} }
+function achIcon(id) { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ACH_ICONS[id] || ''}</svg>`; }
+function achState() {
+  const s = computeStats();
+  s.places = new Set(state.observations.map(o => o.loc).filter(Boolean)).size;
+  const rows = ACH.map(a => { const [cur, need] = s.count ? a.prog(s) : [0, a.prog(s)[1]]; return { ...a, cur, need, done: s.count > 0 && cur >= need }; });
+  return { s, rows, unlocked: rows.filter(r => r.done).map(r => r.id) };
+}
+function renderAchButton() {
+  const { rows, unlocked } = achState();
+  const seen = achSeen(), fresh = unlocked.filter(id => !seen.has(id));
+  $('achCount').textContent = `${unlocked.length} / ${rows.length}`;
+  $('achDot').hidden = !fresh.length; $('achDot').textContent = fresh.length;
+  const newly = unlocked.filter(id => !state.badges.has(id));
+  unlocked.forEach(id => state.badges.add(id));
+  if (newly.length && state.observations.length && state._achReady) setTimeout(() => toast('Achievement unlocked: ' + newly.map(id => ACH.find(a => a.id === id).name).join(', ')), 600);
+  state._achReady = true;
+}
+function renderAch() {
+  const { s, rows, unlocked } = achState();
+  const seen = achSeen();
+  const { earned, next } = challengeState();
+  const tierRows = TIERS.map(t => { const cur = t.id === 'platinum' ? Math.min(15, s.fives) : Math.min(t.need, s.hq); return { ...t, cur, done: earned.includes(t.id), isNext: next && next.id === t.id }; });
+  const card = (r, fresh, extra) => `<div class="ach ${r.done ? 'done' : ''} ${fresh ? 'fresh' : ''}">
+      <div class="ach-badge">${achIcon(r.id)}${fresh ? '<span class="ach-new">New</span>' : ''}</div>
+      <div class="ach-info"><div class="ach-name">${r.name}</div><div class="ach-how">${r.how}</div>
+        <div class="ach-bar"><i style="width:${r.need ? Math.round(r.cur / r.need * 100) : 0}%"></i></div>
+        <div class="ach-meta">${r.done ? 'Unlocked' : `${r.cur} of ${r.need}`}${extra || ''}</div></div>
+    </div>`;
+  $('achBody').innerHTML = `
+    <div class="ach-h">Badges <span>${unlocked.length} of ${rows.length}</span></div>
+    <div class="ach-grid">${rows.map(r => card(r, r.done && !seen.has(r.id))).join('')}</div>
+    <div class="ach-h">Awards <span>${earned.length} of ${TIERS.length}</span></div>
+    <div class="ach-grid awards">${tierRows.map(t => card({ id: t.id === 'platinum' ? 'gem' : 'medal', name: t.name, how: t.id === 'platinum' ? 'All 15 observations scored a 5.' : `${t.need} high-quality observations (level 4 or 5).`, cur: t.cur, need: t.need, done: t.done }, false, t.isNext ? ' · up next' : '')).join('')}</div>
+    <div class="ach-foot">HQ means level 4 or 5. Every score you earn stays earned.</div>`;
+  achMarkSeen(new Set([...seen, ...unlocked])); $('achDot').hidden = true;
+}
+$('btnAch').addEventListener('click', () => { renderAch(); openModal('achModal'); setMood(state.badges.size ? 'proud' : 'curious', 2500); say(state.badges.size ? 'Every badge in the log was earned by looking closely.' : 'Nothing on the wall yet. One good check and the first badge is yours.'); });
 function renderRail() {
   const s = computeStats();
   renderChallenges();
@@ -1491,9 +1602,7 @@ function renderRail() {
   $('stTries').textContent = s.attempts; $('stBest').textContent = s.count ? s.best : '–';
   $('logCount').textContent = s.count;
   $('btnPdf').disabled = !s.count;
-  const newly = [];
-  $('badges').innerHTML = BADGE_DEFS.map(([id, label, test]) => { const on = s.count && test(s); if (on && !state.badges.has(id)) { state.badges.add(id); newly.push(label); } return `<span class="badge ${on ? 'on' : ''}">${label}</span>`; }).join('');
-  if (newly.length && s.count) setTimeout(() => toast('Badge earned: ' + newly.join(', ')), 600);
+  renderAchButton();
   const h = $('history');
   $('histSum').innerHTML = s.count ? `<span>Checked <b>${s.count}</b></span><span>Attempts <b>${s.attempts}</b></span><span>High quality <b>${s.hq}</b></span><span>Level 5s <b>${s.fives}</b></span><span>Best <b>${s.best}</b></span>` : '';
   if (!state.observations.length) { h.innerHTML = '<div class="empty">Nothing here yet. Check an observation and it will show up with my full notes.</div>'; return; }
@@ -1592,7 +1701,13 @@ function liveHints() {
   $('hQual').classList.toggle('on', /\b(pale|dark|light|grey|gray|green|blue|red|brown|tan|black|white|yellow|turquoise|orange|gold|golden|stone|iron|wood|glass|rough|smooth|cracked|rounded|square|rectangular|tall|narrow|wide|steep|flat|curved|striped|shiny|dusty|loud|quiet|ringing|rushing|moving|still|flowing|carved|mossy|hazy|pointed|sloped|jagged|thin|thick)\b/.test(t));
   $('hQuant').classList.toggle('on', /(\b\d+\b|\b(one|two|three|four|five|six|seven|eight|nine|ten|twelve|twenty|dozen|dozens)\b|\b(about|roughly|approximately|around|nearly)\b|\b(longer|shorter|taller|wider|bigger|smaller|larger|as (long|tall|wide|big) as|the size of)\b|football field|school bus|classroom)/.test(t));
 }
-function renderStopChips() { $('stopChips').innerHTML = `<span class="chip static">${esc(state.loc)}</span>`; }
+function renderStopChips() {
+  const o = cur();
+  if (o) { $('stopChips').innerHTML = `<span class="chip static">${esc(state.loc)}</span>`; return; }
+  /* a new observation can come from any place on the trip, so the chip is a dropdown */
+  $('stopChips').innerHTML = `<label class="chip-select"><span class="cs-lbl">Place</span><select id="locSelect" aria-label="Location of this observation">${Object.keys(LOCATIONS).map(k => `<option value="${esc(k)}"${k === state.loc ? ' selected' : ''}>${esc(k)}</option>`).join('')}</select><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></label>`;
+  $('locSelect').addEventListener('change', e => { state.loc = e.target.value; backupNow && backupNow(); setMood('curious', 1200); say(`${state.loc} it is. What did the camera see there?`); liveHints(); });
+}
 function setWriteHeader() {
   const o = cur();
   $('writeEyebrow').textContent = o ? `Observation #${o.n} · attempt ${o.attempts.length + 1}` : `Observation #${state.observations.length + 1} · attempt 1`;
@@ -1922,13 +2037,13 @@ async function playTheater(obs, gradePromise) {
   const env = $('envelope'), tr = ta.getBoundingClientRect();
   $('envPaper').textContent = obs;
   env.style.left = (tr.left + tr.width / 2) + 'px'; env.style.top = (tr.top + Math.min(tr.height, 200) / 2 + 60) + 'px'; env.style.transform = 'translate(-50%, -50%) scale(1.15)';
-  env.classList.add('show', 'open', 'out'); await thWait(650);
-  env.classList.remove('out'); await thWait(700);      /* the letter slides down into the envelope */
-  env.classList.remove('open'); await thWait(550);     /* flap closes, seal on */
+  env.classList.add('show', 'open', 'out'); await thWait(500);
+  env.classList.remove('out'); await thWait(550);      /* the letter slides down into the envelope */
+  env.classList.remove('open'); await thWait(450);     /* flap closes, seal on */
   const bs = $('botStage').getBoundingClientRect();
   env.style.left = (bs.left + bs.width / 2) + 'px'; env.style.top = (bs.top + bs.height / 2) + 'px'; env.style.transform = 'translate(-50%, -50%) scale(0.55) rotate(-10deg)';
-  await thWait(800);
-  $('botStage').classList.add('catch'); await thWait(350);
+  await thWait(650);
+  $('botStage').classList.add('catch'); await thWait(300);
 
   /* --- Scene 2: center stage --- */
   const cx = window.innerWidth / 2, cy = window.innerHeight * 0.42;
@@ -1938,14 +2053,14 @@ async function playTheater(obs, gradePromise) {
   $('theater').classList.add('on'); $('botStage').style.opacity = '0';
   requestAnimationFrame(() => { main.classList.add('show'); main.style.left = '0px'; main.style.top = '0px'; });
   env.style.left = cx + 'px'; env.style.top = (cy + (mobile ? 78 : 118)) + 'px'; env.style.transform = 'translate(-50%, -50%) scale(0.9)';
-  thStep(0); await thWait(800);
+  thStep(0); await thWait(650);
   caption(pick(OPEN_LINES), 'Stage 1 · the letter arrives');
-  await thWait(900);
+  await thWait(700);
 
   /* --- Scene 3: open it, read it --- */
-  await thWait(400); env.classList.add('open'); await thWait(350); env.classList.add('out'); actorFace(main, 'curious');
-  await thWait(1300); caption(pick(READ_LINES)); actorFace(main, 'thinking');
-  await thWait(2000);
+  await thWait(300); env.classList.add('open'); await thWait(300); env.classList.add('out'); actorFace(main, 'curious');
+  await thWait(700); caption(pick(READ_LINES)); actorFace(main, 'thinking');
+  await thWait(1300);
 
   /* --- Scene 4: split into three graders --- */
   const cast = shuffle(GRADER_NAMES).slice(0, 3), colors = shuffle(GRADER_COLORS).slice(0, 3), shapes = shuffle(GRADER_SHAPES).slice(0, 3), tools = shuffle(GRADER_TOOLS).slice(0, 3);
@@ -1960,17 +2075,17 @@ async function playTheater(obs, gradePromise) {
     return g;
   });
   thStep(1); caption(pick(SPLIT_LINES), cast.join('  ·  '));
-  await thWait(2200);
+  await thWait(1500);
 
   /* --- Scene 5: scanning --- */
   graders.forEach(g => { g.classList.add('scan'); g.querySelector('.paper').classList.add('scanning'); });
-  const lines = shuffle(SCAN_LINES).slice(0, 2);
+  const lines = shuffle(SCAN_LINES).slice(0, 1);
   for (let i = 0; i < lines.length; i++) {
-    if (i === 1) thStep(2);
-    caption(lines[i], `Stage ${i < 1 ? 2 : 3} · ${graders.map(g => g.dataset.name).join(' · ')} are reading`);
+    thStep(2);
+    caption(lines[i], `Stage 3 · ${graders.map(g => g.dataset.name).join(' · ')} are reading`);
     const gag = pick(graders); const kind = pick(['hmm', 'yay', 'none']);
     if (kind !== 'none') { gag.classList.add(kind); TH.timers.push(setTimeout(() => gag.classList.remove(kind), 1400)); }
-    await thWait(2400);
+    await thWait(2000);
   }
 
   /* --- Scene 6: tabulating (stretches until the real grades are back) --- */
@@ -1978,7 +2093,7 @@ async function playTheater(obs, gradePromise) {
   graders.forEach(g => { g.classList.remove('scan'); g.querySelector('.paper').classList.remove('scanning'); g.querySelector('.paper').style.opacity = '0.35';
     const c = document.createElement('div'); c.className = 'gcard shake'; c.innerHTML = '<div class="face front"></div><div class="face back">?</div>'; g.appendChild(c); requestAnimationFrame(() => c.classList.add('show')); });
   const tabLines = shuffle(TAB_LINES); let ti = 0;
-  do { caption(tabLines[ti % tabLines.length], 'Stage 4 · tabulating'); ti++; await thWait(2200); } while (!settled);
+  do { caption(tabLines[ti % tabLines.length], 'Stage 4 · tabulating'); ti++; await thWait(1600); } while (!settled);
   if (error) {
     graders.forEach(g => g.classList.add('hmm')); caption('My grading circuits hiccuped. Let us try that again.', ''); $('thNote').textContent = '';
     await thWait(1600); resetTheater(); $('thNote').textContent = 'Every check runs the same five stages. Longer is normal; nothing went wrong.'; throw error;
@@ -1987,21 +2102,21 @@ async function playTheater(obs, gradePromise) {
 
   /* --- Scene 7: the verdict --- */
   thStep(4);
-  for (let i = 0; i < 3; i++) { const c = graders[i].querySelector('.gcard'); c.classList.remove('shake'); c.querySelector('.front').textContent = scores[i]; c.querySelector('.front').style.color = LEVEL_COLORS[scores[i]]; c.classList.add('flip'); await thWait(300); }
-  await thWait(400);
+  for (let i = 0; i < 3; i++) { const c = graders[i].querySelector('.gcard'); c.classList.remove('shake'); c.querySelector('.front').textContent = scores[i]; c.querySelector('.front').style.color = LEVEL_COLORS[scores[i]]; c.classList.add('flip'); await thWait(250); }
+  await thWait(300);
   if (!r.judged) {
     caption(pick(AGREE_LINES), 'Stage 5 · the verdict'); graders.forEach(g => g.classList.add('yay'));
-    const st = $('thStamp'); st.textContent = 'Agreed'; st.className = 'stamp on'; await thWait(2200);
+    const st = $('thStamp'); st.textContent = 'Agreed'; st.className = 'stamp on'; await thWait(1500);
   } else {
     caption(pick(JUDGE_LINES), 'Stage 5 · the verdict'); graders.forEach(g => g.classList.add('hmm'));
     graders[0].style.left = (-spread * 1.3) + 'px'; graders[2].style.left = (spread * 1.3) + 'px'; graders.forEach(g => { g.style.top = (mobile ? 40 : 70) + 'px'; g.style.transform = 'translate(-50%, -50%) scale(0.8)'; }); graders[1].style.left = (-spread * 0.55) + 'px'; graders[1].style.top = (mobile ? 90 : 150) + 'px'; graders[1].style.transform = 'translate(-50%, -50%) scale(0.65)';
     const judge = makeActor('judge', judgeSVG(), 0, -window.innerHeight);
     judge.style.transition = 'top 0.9s var(--ease-pop), opacity 0.4s';
     requestAnimationFrame(() => requestAnimationFrame(() => { judge.classList.add('show'); judge.style.top = (mobile ? -40 : -50) + 'px'; }));
-    await thWait(1600); caption(pick(RULING_LINES)); judge.classList.add('bob');
-    await thWait(2000); judge.classList.remove('bob'); judge.classList.add('bang');
+    await thWait(1200); caption(pick(RULING_LINES)); judge.classList.add('bob');
+    await thWait(1500); judge.classList.remove('bob'); judge.classList.add('bang');
     await thWait(320); const bg = $('thBang'); bg.className = 'bang on'; const st = $('thStamp'); st.textContent = 'Ruled'; st.className = 'stamp judge-stamp on';
-    await thWait(1800);
+    await thWait(1400);
   }
 
   /* --- Scene 8: the final score --- */
@@ -2009,9 +2124,9 @@ async function playTheater(obs, gradePromise) {
   $('thStage').querySelectorAll('.actor').forEach(a => { a.style.opacity = '0'; });
   const fc = $('thFinal'); $('thFinalNum').textContent = r.score; $('thFinalNum').style.color = LEVEL_COLORS[r.score]; $('thFinalLbl').textContent = LEVEL_NAMES[r.score].split(': ')[1] || 'level';
   fc.classList.add('on'); caption(FINAL_LINES[r.score] || 'The verdict is in.', 'Opening your feedback...');
-  await thWait(2400);
+  await thWait(1700);
   $('theater').classList.remove('on'); $('botStage').style.opacity = '';
-  await thWait(450); resetTheater();
+  await thWait(400); resetTheater();
   return r;
 }
 
@@ -3122,6 +3237,33 @@ async function startFresh(confirmed) {
 }
 $('btnFreshRail').addEventListener('click', startFresh);
 $('btnGateFresh').addEventListener('click', e => { e.preventDefault(); startFresh(); });
+/* view a scorecard straight from the access screen: the linked file if this device has one, otherwise pick one (which links it) */
+$('btnLpView').addEventListener('click', async () => {
+  const btn = $('btnLpView'), note = $('lpViewNote'); btn.disabled = true; note.textContent = '';
+  try {
+    const stored = (FS.supported && !FS.handle) ? (FS.stored || await fsGet()) : null;
+    if (FS.handle) { /* already open this session */ }
+    else if (stored) {
+      FS.stored = stored;
+      const ok = await fsContinue();
+      if (!ok) { note.textContent = 'Chrome did not grant access to your file. Try again and choose Allow.'; btn.disabled = false; return; }
+      try { const f = await FS.handle.getFile(); await loadScorecard(f); }
+      catch (e) { await fsDel(); FS.handle = null; FS.stored = null; FS.perm = 'none'; note.textContent = 'Your linked file could not be found. Pick it again.'; btn.disabled = false; return; }
+    } else if (FS.supported) {
+      await fsOpen();
+      if (!FS.handle) { btn.disabled = false; return; }
+    } else {
+      /* no File System Access: plain upload, then preview */
+      await new Promise(res => { const inp = $('pdfFile'); const h = () => { inp.removeEventListener('change', h); setTimeout(res, 1500); }; inp.addEventListener('change', h); inp.click(); setTimeout(() => { inp.removeEventListener('change', h); res(); }, 60000); });
+    }
+    if (!state.observations.length) { note.textContent = $('err').textContent || 'That scorecard has no observations yet.'; btn.disabled = false; return; }
+    if (typeof refreshFsUI === 'function') refreshFsUI();
+    $('previewModal').classList.add('over-landing');
+    $('btnPreview').disabled = false; $('btnPreview').click();
+    note.textContent = FS.handle ? `Showing ${FS.handle.name}` : 'Showing your scorecard';
+  } catch (e) { console.error(e); note.textContent = 'Could not open that scorecard.'; }
+  btn.disabled = false;
+});
 
 document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.hidden = true; }));
 document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-overlay').forEach(m => m.hidden = true); });
