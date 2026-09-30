@@ -663,11 +663,12 @@ html[data-theme="dark"] .sess-timer.ok { color: #9fe0b3; } html[data-theme="dark
         <p class="lede">Bring one observation statement at a time from your Virtual Trips log. I score it 1 to 5, ask you questions, and you revise until it is sharp. I never write it for you.</p>
         <div class="gate" id="gate">
           <div id="gateNew">
-            <label class="gate-lbl" for="gateName">First, who is observing today?</label>
+            <label class="gate-lbl" for="gateName">New here? Type your name to create your scorecard.</label>
             <div class="gate-row">
               <input type="text" id="gateName" maxlength="40" autocomplete="off" placeholder="Type your full name">
-              <button class="btn primary" id="btnGateGo" disabled>That&rsquo;s me</button>
+              <button class="btn primary" id="btnGateGo" disabled>Create my scorecard and begin</button>
             </div>
+            <div class="fs-status" id="gateNote" style="margin-top:0.4rem">Your scorecard is a PDF you own. Pick where to keep it (your Drive folder is a good spot) and it saves itself after every check.</div>
             <div class="gate-or"><span>or</span></div>
             <div style="text-align:center"><button class="btn secondary" id="btnGateLoad">Load a past scorecard (PDF) to pick up where you left off</button></div>
             <button id="btnGateContinue" style="display:none"></button><button id="btnGateResume" style="display:none"></button>
@@ -1157,9 +1158,25 @@ function unlockGate(how) {
 const gateName = $('gateName');
 gateName.addEventListener('input', () => { $('btnGateGo').disabled = gateName.value.trim().length < 2; });
 gateName.addEventListener('keydown', e => { if (e.key === 'Enter' && !$('btnGateGo').disabled) $('btnGateGo').click(); });
-$('btnGateGo').addEventListener('click', () => {
+$('btnGateGo').addEventListener('click', async () => {
   const v = gateName.value.trim(); if (v.length < 2) return;
-  $('name').value = v; unlockGate('name');
+  $('name').value = v;
+  const btn = $('btnGateGo'), err = $('errWelcome'); err.textContent = '';
+  if (typeof FS !== 'undefined' && FS.supported && !FS.handle) {
+    btn.disabled = true; btn.textContent = 'Creating...';
+    try {
+      const h = await window.showSaveFilePicker({ suggestedName: fsFileName(), types: [{ description: 'Observation Scorecard (PDF)', accept: { 'application/pdf': ['.pdf'] } }] });
+      await fsWriteBlob(h, makePdf(await buildScorecard()));            /* a real (empty) scorecard exists from minute one */
+      FS.handle = h; FS.perm = 'granted'; await fsPut(h); refreshFsUI(); if (typeof backupNow === 'function') backupNow();
+      unlockGate('name'); setTimeout(() => say(`Scorecard created: ${h.name}. It will save itself after every check. Now pick a location.`), 1900);
+    } catch (e) {
+      if (e && e.name === 'AbortError') { err.textContent = 'Your scorecard needs a home before we start. Try again and pick a folder.'; }
+      else { console.error(e); err.textContent = 'Could not create the file here. You can still begin; the bot will download scorecards instead.'; unlockGate('name'); }
+    }
+    btn.disabled = false; btn.textContent = 'Create my scorecard and begin';
+    return;
+  }
+  unlockGate('name');
 });
 $('btnGateLoad').addEventListener('click', () => { setMood('curious', 1500); say('Show me a scorecard and I will pick up where you left off.'); if (FS.supported) fsOpen(); else $('pdfFile').click(); });
 $('name').addEventListener('input', () => { if (!unlocked) { gateName.value = $('name').value; $('btnGateGo').disabled = gateName.value.trim().length < 2; } });
