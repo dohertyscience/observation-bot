@@ -616,6 +616,23 @@ body::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-even
 .admin-pill { background: var(--sun); color: var(--abyss); }
 .stage { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 0.1rem 0.3rem 2rem 0.1rem; }
 
+.sc-file { display: flex; align-items: center; gap: 0.45rem; font-size: 0.82rem; font-weight: 700; color: var(--shell); margin-top: 0.15rem; min-width: 0; }
+.sc-file b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
+.sc-file .btn { flex: 1; }
+#previewModal .modal { display: flex; flex-direction: column; }
+.preview-body { flex: 1; min-height: 0; overflow-y: auto; background: var(--sky-deep); padding: 1rem; display: flex; flex-direction: column; gap: 1rem; align-items: center; }
+.preview-body img { width: 100%; max-width: 760px; border-radius: 6px; box-shadow: 0 8px 24px rgba(6,34,62,.25); background: #fff; display: block; }
+.preview-body .pg { font-family: var(--mono); font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; color: var(--mid); }
+.sc-goal { margin-top: 0.55rem; }
+.sc-goal-row { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--mono); font-size: 0.58rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--foam); }
+.sc-goal-row b { font-family: var(--display); font-size: 0.95rem; letter-spacing: 0; text-transform: none; color: var(--sun); }
+.sc-bar { height: 8px; border-radius: 99px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.12); overflow: hidden; margin-top: 0.25rem; }
+.sc-bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--foam), var(--sun)); transition: width 0.6s var(--ease-out); }
+.sc-meta { display: flex; justify-content: space-between; gap: 0.5rem; font-family: var(--mono); font-size: 0.56rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--foam); opacity: 0.85; margin-top: 0.45rem; }
+.scorecard .rail-btns { margin-top: 0.55rem; }
+/* content column stays readable: cap the width and center it */
+.tabs, .tabpane { max-width: 940px; margin-left: auto; margin-right: auto; }
+.tabs { margin-bottom: 0.85rem; }
 /* ---- content cards ---- */
 .content-rail .card { background: #fff; border: 2px solid var(--card-line); border-radius: 22px; box-shadow: var(--pop-shadow); }
 .tabs { background: transparent; padding: 0; gap: 0.5rem; box-shadow: none; position: static; margin-bottom: 0.85rem; }
@@ -723,6 +740,17 @@ h2.title { font-weight: 600; color: var(--abyss); }
               <path id="browR" d="M122 98q12-8 24 0" fill="none" stroke="#0a1f33" stroke-width="4" stroke-linecap="round" opacity="0"/>
               <!-- mouth -->
               <path id="mouth" d="M92 146q18 12 36 0" fill="none" stroke="#0a1f33" stroke-width="4.5" stroke-linecap="round"/>
+              <!-- captain's cap -->
+              <g class="cap">
+                <path d="M50 66 Q110 18 170 66 L170 74 L50 74 Z" fill="#0a3357" stroke="#0a1f33" stroke-width="4" stroke-linejoin="round"/>
+                <path d="M66 54 Q110 30 154 54" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="4" stroke-linecap="round"/>
+                <rect x="44" y="64" width="132" height="14" rx="6" fill="#06223e" stroke="#0a1f33" stroke-width="4"/>
+                <path d="M54 71 H166" stroke="#f6c453" stroke-width="3" stroke-linecap="round"/>
+                <ellipse cx="110" cy="79" rx="70" ry="8" fill="#0a1f33"/>
+                <ellipse cx="110" cy="77" rx="64" ry="5" fill="#1a3a5c"/>
+                <circle cx="110" cy="56" r="10" fill="#f6c453" stroke="#0a1f33" stroke-width="3"/>
+                <path d="M105 56a5 5 0 0 1 10 0a5 5 0 0 1 -10 0" fill="#0a1f33"/><circle cx="110" cy="56" r="2" fill="#f6c453"/>
+              </g>
               <!-- chin plate -->
               <rect x="86" y="176" width="48" height="10" rx="5" fill="#0a1f33" opacity="0.35"/>
               <g fill="#fdfaf3" opacity="0.7"><circle cx="98" cy="181" r="1.8"/><circle cx="106" cy="181" r="1.8"/><circle cx="114" cy="181" r="1.8"/><circle cx="122" cy="181" r="1.8"/></g>
@@ -739,7 +767,7 @@ h2.title { font-weight: 600; color: var(--abyss); }
       </div>
       <div class="mood-tag" id="moodTag">Ready</div>
       <div class="sess-timer" id="sessTimer"></div>
-      <div class="bubble" id="bubble">Hi! I am your observation coach. Type your name, or load a past scorecard, and we will start.</div>
+      <div class="bubble" id="bubble">Ahoy! I am your field coach. Type your name to create your scorecard and we set sail.</div>
     </div>
     <div class="card mission">
       <h3>Challenges <span class="eyebrow" id="chNext">Goal: 7 HQ</span></h3>
@@ -756,14 +784,16 @@ h2.title { font-weight: 600; color: var(--abyss); }
       <div class="badges" id="badges"></div>
     </div>
     <div class="card scorecard">
-      <h3>Scorecard <span class="unsaved-pill" id="unsavedPill">saved</span></h3>
-      <p>Nothing saves on its own. Download a scorecard before you leave, and load it next time to keep going.</p>
+      <h3>My scorecard <span class="unsaved-pill" id="unsavedPill">saved</span></h3>
+      <div class="sc-file" id="scFile"><span class="fs-dot" id="scDot"></span><b id="scName" style="display:none"></b><button class="btn ghost sm" id="btnPreview" disabled>Preview your scorecard</button></div>
+      <div class="sc-goal"><div class="sc-goal-row"><span>Observations logged</span><b id="scCount">0 / 15</b></div><div class="sc-bar"><i id="scBar"></i></div></div>
+      <div class="sc-meta"><span id="scSaved">Not saved yet</span><span id="scBackup"></span></div>
       <div class="rail-btns">
-        <button class="btn success sm" id="btnPdf" disabled>Download scorecard (PDF)</button>
+        <button class="btn success sm" id="btnPdf" disabled>Save scorecard</button>
         <button class="btn ghost sm" id="btnLoad">Load a past scorecard</button>
         <button class="btn ghost sm" id="btnAutosave" style="display:none">Turn on autosave</button>
-        <div class="fs-status" id="fsStatus"></div>
-        <div class="fs-status" id="lsStatus"></div>
+        <div class="fs-status" id="fsStatus" style="display:none"></div>
+        <div class="fs-status" id="lsStatus" style="display:none"></div>
         <div class="fs-status" id="linkNote" style="display:none"></div>
         <button class="btn ghost sm" id="btnFreshRail" style="display:none">Not you? Start fresh on this device</button>
         <input type="file" id="pdfFile" accept="application/pdf,.pdf" style="display:none">
@@ -773,7 +803,7 @@ h2.title { font-weight: 600; color: var(--abyss); }
   <div class="content-rail">
 <header class="topbar">
   <div class="xpwrap">
-    <div class="xprow"><span id="lvlName">Rookie Observer</span><b id="xpNum">0 XP</b><span id="xpNext">100 to next</span></div>
+    <div class="xprow"><span id="lvlName">Deckhand</span><b id="xpNum">0 XP</b><span id="xpNext">100 to next</span></div>
     <div class="xpbar"><i id="xpFill"></i></div>
   </div>
   <div class="tools">
@@ -989,13 +1019,13 @@ h2.title { font-weight: 600; color: var(--abyss); }
         <div><div class="lp-name">Observation Helper Bot</div><div class="lp-tag">Lesson 2.2 &middot; Virtual Trips</div></div>
       </div>
       <div class="lp-card">
-        <span class="lp-eyebrow">Field notebook</span>
+        <span class="lp-eyebrow" id="accessEyebrow">Field coach</span>
         <h1>Ready to observe?</h1>
-        <p class="lp-sub" id="accessMsg">Enter today's access code from the board to open your notebook.</p>
+        <p class="lp-sub" id="accessMsg">Enter today's access code from the board and the captain will open the log.</p>
         <label for="accessCode">Access code</label>
         <div class="lp-input-row">
           <input id="accessCode" type="text" maxlength="11" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXXX-XXXXX" inputmode="latin">
-          <button type="button" class="lp-go" id="btnAccess">Set sail</button>
+          <button type="button" class="lp-go" id="btnAccess">Dive in</button>
         </div>
         <div class="lp-msg" id="accessErr"></div>
       </div>
@@ -1062,6 +1092,12 @@ h2.title { font-weight: 600; color: var(--abyss); }
   <div class="b-hint">Type it exactly &middot; letters are not case sensitive &middot; click anywhere to close</div>
 </div>
 
+<div class="modal-overlay" id="previewModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" style="width:min(900px,100%);height:min(92vh,1100px)">
+    <div class="modal-head"><div><h3>Your scorecard</h3><div class="modal-sub" id="previewSub">A live preview of the PDF you own</div></div><button class="modal-x" data-close="previewModal" aria-label="Close">&times;</button></div>
+    <div class="modal-body preview-body" id="previewBody"></div>
+  </div>
+</div>
 <div class="modal-overlay" id="leaveModal" hidden>
   <div class="modal" role="dialog" aria-modal="true" style="width:min(440px,100%)">
     <div class="modal-head"><div><h3>Before you go</h3><div class="modal-sub">Nothing is saved on its own</div></div><button class="modal-x" data-close="leaveModal" aria-label="Close">&times;</button></div>
@@ -1148,7 +1184,7 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const LEVEL_NAMES = { 1: 'Level 1: Basic', 2: 'Level 2: Vague', 3: 'Level 3: Solid', 4: 'Level 4: Detailed', 5: 'Level 5: Expert observer' };
 const LEVEL_COLORS = { 1: '#8b959d', 2: '#4489a6', 3: '#2d7da3', 4: '#4a7c59', 5: '#2f5d3a' };
-const RANKS = [[0, 'Rookie Observer'], [100, 'Sharp Eye'], [250, 'Detail Hunter'], [450, 'Field Scientist'], [700, 'Expert Observer'], [1000, 'Legend of the Lens']];
+const RANKS = [[0, 'Deckhand'], [100, 'Lookout'], [250, 'Navigator'], [450, 'First Mate'], [700, 'Captain'], [1000, 'Admiral of the Lens']];
 const last = o => o.attempts[o.attempts.length - 1];
 const cur = () => state.current === null ? null : state.observations[state.current];
 if (MOCK) $('mockBanner').classList.add('show');
@@ -1157,18 +1193,18 @@ if (MOCK) $('mockBanner').classList.add('show');
    BOT: moods, speech, reactions
    ============================================================ */
 const FACES = {
-  idle:       { mouth: 'M92 146q18 12 36 0', eyeRy: 13, brows: 0, tag: 'Ready' },
-  thinking:   { mouth: 'M96 148h28', eyeRy: 9, brows: 1, browL: 'M74 100q12-4 24-2', browR: 'M122 98q12 2 24 6', tag: 'Looking closely...' },
-  happy:      { mouth: 'M88 142q22 20 44 0', eyeRy: 13, brows: 0, tag: 'Nice work' },
-  wow:        { mouth: 'M98 140a12 14 0 1 0 24 0a12 14 0 1 0-24 0', eyeRy: 15, brows: 1, browL: 'M74 92q12-10 24-2', browR: 'M122 90q12-8 24 2', tag: 'Expert observer!' },
-  hmm:        { mouth: 'M96 150q14 5 28-1', eyeRy: 12, brows: 1, browL: 'M74 104q12-8 24-4', browR: 'M122 100q12-4 24 4', tag: 'Look again' },
-  oops:       { mouth: 'M94 150q18 6 36-4', eyeRy: 12, brows: 1, browL: 'M74 94q12 4 24 6', browR: 'M122 100q12-6 24-4', tag: 'Hmm, a snag' },
-  curious:    { mouth: 'M94 146q18 8 34 2', eyeRy: 14, brows: 1, browL: 'M74 96q12-6 24-2', browR: 'M122 92q12-6 24 0', tag: 'Watching you write' },
-  determined: { mouth: 'M92 147q18 6 36 0', eyeRy: 11, brows: 1, browL: 'M74 100q12-2 24 2', browR: 'M122 102q12-4 24-2', tag: 'Revision time' },
-  proud:      { mouth: 'M88 142q22 18 44 0', eyeRy: 12, brows: 1, browL: 'M74 96q12-8 24-2', browR: 'M122 94q12-6 24 2', tag: 'Look at that' },
-  teach:      { mouth: 'M94 146q18 10 34 0', eyeRy: 13, brows: 1, browL: 'M74 94q12-8 24-4', browR: 'M122 90q12-6 24 4', tag: 'The rubric' },
-  wink:       { mouth: 'M90 142q20 18 40 0', eyeRy: 13, brows: 0, wink: true, tag: 'Wink' },
-  wave:       { mouth: 'M88 142q22 20 44 0', eyeRy: 13, brows: 0, tag: 'Hello!' },
+  idle:       { mouth: 'M92 146q18 12 36 0', eyeRy: 13, brows: 0, tag: 'Captain on deck' },
+  thinking:   { mouth: 'M96 148h28', eyeRy: 9, brows: 1, browL: 'M74 100q12-4 24-2', browR: 'M122 98q12 2 24 6', tag: 'Charting the course...' },
+  happy:      { mouth: 'M88 142q22 20 44 0', eyeRy: 13, brows: 0, tag: 'Steady as she goes' },
+  wow:        { mouth: 'M98 140a12 14 0 1 0 24 0a12 14 0 1 0-24 0', eyeRy: 15, brows: 1, browL: 'M74 92q12-10 24-2', browR: 'M122 90q12-8 24 2', tag: 'Well spotted, crew!' },
+  hmm:        { mouth: 'M96 150q14 5 28-1', eyeRy: 12, brows: 1, browL: 'M74 104q12-8 24-4', browR: 'M122 100q12-4 24 4', tag: 'Spyglass up, sailor' },
+  oops:       { mouth: 'M94 150q18 6 36-4', eyeRy: 12, brows: 1, browL: 'M74 94q12 4 24 6', browR: 'M122 100q12-6 24-4', tag: 'Rough seas' },
+  curious:    { mouth: 'M94 146q18 8 34 2', eyeRy: 14, brows: 1, browL: 'M74 96q12-6 24-2', browR: 'M122 92q12-6 24 0', tag: 'Watching from the helm' },
+  determined: { mouth: 'M92 147q18 6 36 0', eyeRy: 11, brows: 1, browL: 'M74 100q12-2 24 2', browR: 'M122 102q12-4 24-2', tag: 'Full speed ahead' },
+  proud:      { mouth: 'M88 142q22 18 44 0', eyeRy: 12, brows: 1, browL: 'M74 96q12-8 24-2', browR: 'M122 94q12-6 24 2', tag: 'Proud captain' },
+  teach:      { mouth: 'M94 146q18 10 34 0', eyeRy: 13, brows: 1, browL: 'M74 94q12-8 24-4', browR: 'M122 90q12-6 24 4', tag: "Captain's orders" },
+  wink:       { mouth: 'M90 142q20 18 40 0', eyeRy: 13, brows: 0, wink: true, tag: 'Aye aye' },
+  wave:       { mouth: 'M88 142q22 20 44 0', eyeRy: 13, brows: 0, tag: 'Ahoy!' },
 };
 let moodTimer = null, typingTimer = null;
 /* a score, once awarded, is never taken away: an observation counts at its best attempt */
@@ -1336,7 +1372,7 @@ function unlockGate(how) {
   if (unlocked) return; unlocked = true; warmCache();
   $('gate').classList.add('gone'); $('pick').classList.remove('locked');
   const first = ($('name').value.trim().split(' ')[0]) || 'observer';
-  if (how === 'name') { setMood('wave', 1800); say(`Nice to meet you, ${first}! Now pick a location to start.`); }
+  if (how === 'name') { setMood('wave', 1800); say(`Welcome aboard, ${first}! Pick a location and we set sail.`); }
 }
 const gateName = $('gateName');
 gateName.addEventListener('input', () => { $('btnGateGo').disabled = gateName.value.trim().length < 2; });
@@ -1351,7 +1387,7 @@ $('btnGateGo').addEventListener('click', async () => {
       const h = await window.showSaveFilePicker({ suggestedName: fsFileName(), types: [{ description: 'Observation Scorecard (PDF)', accept: { 'application/pdf': ['.pdf'] } }] });
       await fsWriteBlob(h, makePdf(await buildScorecard()));            /* a real (empty) scorecard exists from minute one */
       FS.handle = h; FS.perm = 'granted'; await fsPut(h); refreshFsUI(); if (typeof backupNow === 'function') backupNow();
-      unlockGate('name'); setTimeout(() => say(`Scorecard created: ${h.name}. It will save itself after every check. Now pick a location.`), 1900);
+      unlockGate('name'); setTimeout(() => say(`Log created: ${h.name}. It saves itself after every check. Now pick a location, crew.`), 1900);
     } catch (e) {
       if (e && e.name === 'AbortError') { err.textContent = 'Your scorecard needs a home before we start. Try again and pick a folder.'; }
       else { console.error(e); err.textContent = 'Could not create the file here. You can still begin; the bot will download scorecards instead.'; unlockGate('name'); }
@@ -1398,7 +1434,7 @@ function startNew(first) {
   setWriteHeader(); goScreen('write'); renderRail();
   $('btnCheck').classList.add('pulse');
   setMood('wave', 1400);
-  say(first ? 'Notebook open. Write one sentence about one thing you saw. Only what a camera could record.' : `Observation #${state.observations.length + 1}. Fresh page. What did the camera see this time?`);
+  say(first ? 'Log is open. Write one sentence about one thing you saw. Only what a camera could record.' : `Observation #${state.observations.length + 1}. Fresh page. What did the camera see this time?`);
   setTimeout(() => ta.focus(), 350);
 }
 function reviseCurrent() {
@@ -1569,12 +1605,12 @@ const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { c
 function caption(t, sub) { const c = $('thCaption'); c.classList.remove('on'); void c.offsetWidth; c.textContent = t; c.classList.add('on'); if (sub !== undefined) $('thSub').textContent = sub; }
 function thStep(i) { $('thSteps').querySelectorAll('span').forEach((s, k) => { s.className = k < i ? 'done' : k === i ? 'on' : ''; }); }
 
-const OPEN_LINES = ['A letter for me! Let me open it.', 'Special delivery. Opening it now...', 'Ooh, fresh ink. Let me see.', 'An observation, sealed and delivered.'];
-const READ_LINES = ['Reading... this needs my graders.', 'Interesting. Graders, assemble!', 'Three fresh pairs of eyes, please.', 'Hmm. I want my whole crew on this one.'];
-const SPLIT_LINES = ['Three graders, three fresh pairs of eyes.', 'Meet the grading crew.', 'Everyone reads the same sentence, on their own.'];
+const OPEN_LINES = ['A message in a bottle! Let me open it.', 'Special delivery for the captain. Opening now...', 'Ooh, fresh ink. Let me see.', 'An observation, sealed and delivered to the bridge.'];
+const READ_LINES = ['Reading... this needs my crew.', 'Interesting. All hands on deck!', 'Three fresh pairs of eyes, please.', 'Hmm. I want my whole crew on this one.'];
+const SPLIT_LINES = ['Three crew members, three fresh pairs of eyes.', 'Meet the grading crew.', 'Everyone reads the same sentence, on their own.'];
 const SCAN_LINES = ['Running the camera test...', 'Observing the observation...', 'Measuring the quantity of qualitative statements...', 'Scoring the quality of the quantitative statements...', 'Hunting for filler words...', 'Checking every word against the ladder...', 'Looking for the blend of words and numbers...', 'Counting the specifics...', 'Asking: could a camera record this?'];
 const TAB_LINES = ['Tabulating the scores...', 'Double-checking the rubric...', 'Comparing notes...', 'Sharpening pencils...', 'Adding up the evidence...', 'Good observing takes a moment...'];
-const AGREE_LINES = ['All three agree!', 'Unanimous. No judge needed.', 'Same score, three times. Case closed.'];
+const AGREE_LINES = ['All three agree!', 'Unanimous. No judge needed.', 'Same score, three times. Anchors aweigh.'];
 const JUDGE_LINES = ['They do not agree. Send in the judge!', 'A split decision. Calling the judge.', 'Two against one. The judge decides.'];
 const RULING_LINES = ['The judge reads every note...', 'Weighing the evidence...', 'Order! Order in the grading room.'];
 const FINAL_LINES = { 1: 'Level 1. The camera saw more than this.', 2: 'Level 2. One real detail. Keep going.', 3: 'Level 3. Solid and checkable.', 4: 'Level 4. Detailed! One step from the top.', 5: 'Level 5. Expert work!' };
@@ -1867,7 +1903,6 @@ async function check() {
     if (!o) { o = { n: state.observations.length + 1, loc: state.loc, stop: state.stop, attempts: [] }; state.observations.push(o); state.current = state.observations.length - 1; }
     o.attempts.push({ text: obs, at: new Date(), ...r, merged: mergedInto || 0 }); markDirty(1); fsAutosave();
     showResult(o); goScreen('review'); renderRail();
-    if (mergedInto) setTimeout(() => { setMood('teach', 3000); say(`Scored and merged into #${mergedInto}. Nothing is lost: this is now the newest version of that observation. Ready for something new?`); }, 2600);
   } catch (e) {
     console.error(e); window.__lastErr = String(e.message); setMood('oops');
     goScreen('write');
@@ -1878,6 +1913,30 @@ async function check() {
   state.busy = false; $('btnCheck').disabled = false;
 }
 
+/* the captain's canned reactions: picked by situation, then by score */
+const COACH_LINES = {
+  fail: ['Belay that! Part of this is an opinion, not a sighting. Keep what the camera saw and drop what you think.', 'The camera cannot record a feeling or a guess, sailor. Strip it back to what was in front of you.', 'That one drifted off course into explaining. Log only what you could see, hear, or measure.'],
+  kept: ['This version came in at {s}, but your level {b} is safe. I never take back a score you earned. Try another angle?', 'Level {s} this time, and your {b} still stands. No sailor loses stripes for trying a new tack.', 'A step back to {s}, but I keep your best of {b} on the books. Change one thing and check again.'],
+  up: ['Up from {p} to {s}! Revising is how observers get sharp.', 'From {p} to {s}. That is how a deckhand becomes a navigator.', 'Climbed from {p} to {s}! Steady as she goes.'],
+  same: ['Same level as last time, {s}. Change something real: a count, a color, a comparison.', 'Holding at {s}. Look again through the spyglass and find one more detail.'],
+  merged: ['Scored and merged into #{m}. Nothing is lost: this is the newest version of that observation. Ready for something new?', 'Logged as a revision of #{m}. The log needs fifteen different sightings, crew, so point the spyglass somewhere new.'],
+  5: ['Top of the ladder! A camera and a ruler would both agree with you.', 'Level 5. Expert observing, crew. That one goes straight in the captain\'s log.', 'Well spotted! Detail, numbers, and nothing a camera would argue with. Level 5.'],
+  4: ['So close to expert. One more precise detail and this sentence is done.', 'Level 4. Detailed and checkable. Add a color, material, or texture and it is a 5.', 'Strong sighting. One sharper detail separates this from the top.'],
+  3: ['Solid and checkable. Now blend: pair what you saw with a count or a comparison.', 'Level 3. Real details, but no measure yet. About how many, or how big compared to something you know?', 'Good bones. Add an estimate or a comparison and this climbs a level.'],
+  2: ['It passes the camera test, but the camera saw more than this. Look again.', 'Level 2. One real detail. What color, shape, or material would a camera have caught?', 'A start, sailor. Swap the vague words for things a ruler or a count could check.'],
+  1: ['The camera saw more than this. Name the exact thing and one detail about it.', 'Level 1. A bare sighting. What did it look like, and about how much of it was there?', 'Too thin for the log. Look again: color, shape, size, material.'],
+};
+function coachLine(o, r, prev) {
+  const fill = t => t.replace('{s}', r.score).replace('{p}', prev ? prev.score : '').replace('{b}', bestOf(o)).replace('{m}', r.merged || '');
+  let pool;
+  if (!r.passesCameraTest) pool = COACH_LINES.fail;
+  else if (r.merged) pool = COACH_LINES.merged;
+  else if (prev && r.score < bestOf(o)) pool = COACH_LINES.kept;
+  else if (prev && r.score > prev.score) pool = COACH_LINES.up;
+  else if (prev && r.score === prev.score) pool = COACH_LINES.same;
+  else pool = COACH_LINES[r.score] || COACH_LINES[3];
+  return fill(pick(pool));
+}
 function showResult(o, quiet) {
   const r = last(o), n = o.attempts.length, prev = n > 1 ? o.attempts[n - 2] : null;
   const res = $('scr-review');
@@ -1919,13 +1978,7 @@ function showResult(o, quiet) {
   r.xp = gained; $('xpChip').textContent = '+' + gained + ' XP';
   setTimeout(() => awardXP(gained, $('xpChip')), 1400);
   setMood(r.score === 5 ? 'wow' : r.score >= 3 ? 'happy' : 'hmm');
-  say(prev && r.score < bestOf(o) ? `This version came in at ${r.score}, but your level ${bestOf(o)} is safe. I never take back a score you earned. Want to try another angle?`
-    : prev && r.score > prev.score ? `Up from ${prev.score} to ${r.score}! Revising is how observers get sharp.`
-    : r.score === 5 ? 'That is the top of the ladder for this assignment. A camera and a ruler would both agree with you.'
-    : r.score === 4 ? 'So close to expert. One more precise detail and this sentence is done.'
-    : r.score === 3 ? 'Solid and checkable. Now blend: pair what you saw with a count or a comparison.'
-    : r.passesCameraTest ? 'It passes the camera test, but the camera saw more than this. Look again.'
-    : 'Part of this is not something a camera could record. Keep what you saw, drop what you think.');
+  say(coachLine(o, r, prev));
   if (r.score === 5) setTimeout(confetti, 1100);
 }
 
@@ -2319,10 +2372,27 @@ function codeStatus(info) {
 
 /* --- gate state --- */
 const access = { ok: false, admin: false, info: null, token: '' };
+const AC_KEY = 'ohb-access';
+function rememberAccess(info) { try { localStorage.setItem(AC_KEY, JSON.stringify({ code: info.code, startsAt: info.startsAt, expiresAt: info.expiresAt })); } catch (e) {} }
+function forgetAccess() { try { localStorage.removeItem(AC_KEY); } catch (e) {} }
+/* on load: a remembered, still-valid code skips the gate; an expired one is cleared and explained once */
+(async function () {
+  let saved = null; try { saved = JSON.parse(localStorage.getItem(AC_KEY) || 'null'); } catch (e) {}
+  if (!saved || !saved.code) return;
+  const expiredUI = () => { forgetAccess(); $('access').classList.add('relock'); $('accessMsg').textContent = 'Your access code has expired. Ask your teacher for a new one, then enter it here.'; $('accessEyebrow').textContent = 'Code expired'; $('accessErr').textContent = ''; };
+  $('accessErr').className = 'lp-msg'; $('accessErr').textContent = 'Checking your code from last time...'; $('btnAccess').disabled = true;
+  try {
+    const r = MOCK ? { ok: Date.now() < saved.expiresAt, why: 'expired', code: saved.code, startsAt: saved.startsAt, expiresAt: saved.expiresAt } : await relay({ action: 'verifyCode', code: saved.code });
+    if (r.ok) { access.ok = true; access.info = { code: r.code, startsAt: r.startsAt, expiresAt: r.expiresAt }; rememberAccess(access.info); $('access').hidden = true; }
+    else expiredUI();
+  } catch (e) { $('accessErr').textContent = 'Could not reach the checker. Enter the code from the board to try again.'; }
+  $('btnAccess').disabled = false;
+})();
 function accessOK() { return access.admin || (access.info && Date.now() < access.info.expiresAt); }
 function showGate(relock) {
-  const g = $('access'); g.hidden = false; g.classList.toggle('relock', !!relock);
-  $('accessMsg').textContent = relock ? 'Your access code has expired. Nothing is lost: enter a new code from the board to keep going.' : "Enter today's access code from the board to start.";
+  if (relock) forgetAccess();
+  const g = $('access'); g.hidden = false; g.classList.toggle('relock', !!relock); $('accessEyebrow').textContent = relock ? 'Code expired' : 'Field coach';
+  $('accessMsg').textContent = relock ? 'Your access code has expired. Nothing is lost: enter a new code from the board to keep going.' : "Enter today's access code from the board and the captain will open the log.";
   $('accessErr').textContent = ''; $('accessCode').value = ''; setTimeout(() => $('accessCode').focus(), 100);
 }
 async function tryAccess() {
@@ -2330,12 +2400,12 @@ async function tryAccess() {
   const err = $('accessErr'); err.className = 'lp-msg';
   if (!info) { err.textContent = 'That code is not right. Check each letter against the board.'; $('accessCode').select(); return; }
   const st = codeStatus(info);
-  if (MOCK) { if (!st.ok) { err.textContent = st.why; $('accessCode').select(); return; } access.ok = true; access.info = info; err.textContent = st.why + ' (mock mode)'; err.classList.add('access-ok'); setTimeout(() => { $('access').hidden = true; }, 500); return; }
+  if (MOCK) { if (!st.ok) { err.textContent = st.why; $('accessCode').select(); return; } access.ok = true; access.info = info; rememberAccess(info); err.textContent = st.why + ' (mock mode)'; err.classList.add('access-ok'); setTimeout(() => { $('access').hidden = true; }, 500); return; }
   err.textContent = 'Checking...'; $('btnAccess').disabled = true;
   try {
     const r = await relay({ action: 'verifyCode', code: info.code });
     if (!r.ok) { err.textContent = r.why === 'expired' ? `That code expired at ${fmtTime(r.expiresAt)} on ${fmtDay(r.expiresAt)}. Ask your teacher for today's code.` : r.why === 'not-yet' ? `That code is not active yet. It starts at ${fmtTime(r.startsAt)}.` : 'That code is not right. Check each letter against the board.'; $('accessCode').select(); }
-    else { access.ok = true; access.info = { code: r.code, startsAt: r.startsAt, expiresAt: r.expiresAt }; err.textContent = `Unlocked until ${fmtTime(r.expiresAt)}.`; err.classList.add('access-ok'); setTimeout(() => { $('access').hidden = true; $('accessCode').value = ''; }, 500); }
+    else { access.ok = true; access.info = { code: r.code, startsAt: r.startsAt, expiresAt: r.expiresAt }; rememberAccess(access.info); err.textContent = `Unlocked until ${fmtTime(r.expiresAt)}.`; err.classList.add('access-ok'); setTimeout(() => { $('access').hidden = true; $('accessCode').value = ''; }, 500); }
   } catch (e) { err.textContent = 'Could not reach the checker. Check the connection and try again.'; }
   $('btnAccess').disabled = false;
 }
@@ -2465,7 +2535,7 @@ function tickTimer() {
 async function sessionOver() {
   if (state.busy) { setTimeout(() => { saveState.expired = false; }, 3000); return; }   /* let a grade in flight finish first */
   if (state.observations.length && saveState.dirty > 0) { await downloadScorecard('Time is up: your scorecard was downloaded automatically.'); }
-  showGate(true);
+  showGate(true); forgetAccess();
   $('accessMsg').textContent = state.observations.length ? 'Time is up for this session. Your scorecard was just downloaded (check your Downloads folder). Enter a new code from the board to keep going.' : 'Time is up for this session. Enter a new code from the board to keep going.';
 }
 setInterval(tickTimer, 1000);
@@ -2516,14 +2586,25 @@ async function fsPermission(h, ask) {
   catch (e) { return false; }
 }
 async function fsWriteBlob(h, blob) { const w = await h.createWritable(); await w.write(blob); await w.close(); }
+function refreshScorecardCard() {
+  const n = state.observations.length, target = 15;
+  $('scCount').textContent = `${n} / ${target}`; $('scBar').style.width = Math.min(100, n / target * 100) + '%';
+  const linked = FS.supported && FS.handle;
+  $('scName').textContent = linked ? FS.handle.name : ''; $('btnPreview').disabled = !n; $('btnPreview').title = linked ? FS.handle.name : '';
+  $('scDot').className = 'fs-dot' + (linked && FS.perm === 'granted' ? ' on' : '');
+  $('scSaved').textContent = saveState.lastSave ? 'Saved ' + new Date(saveState.lastSave).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : (n ? 'Not saved yet' : 'Nothing to save yet');
+  const pdf = $('btnPdf'); pdf.style.display = (!linked || saveState.dirty > 0) && n ? '' : 'none';
+  if (linked) pdf.textContent = saveState.dirty > 0 ? `Save now (${saveState.dirty} unsaved)` : 'Save now';
+}
 function refreshFsUI() {
+  refreshScorecardCard();
   const st = $('fsStatus'), b = $('btnAutosave');
   if (!FS.api) { st.textContent = ''; b.style.display = 'none'; return; }
   if (!FS.top) { st.innerHTML = `Autosave needs its own tab. <a href="${PUBLIC_URL || '#'}" id="fsOpenTab" target="_blank" rel="noopener">Open the bot in a new tab</a> to turn it on.`; b.style.display = 'none'; $('fsOpenTab').addEventListener('click', openOwnTab); return; }
   if (FS.handle && FS.perm === 'granted') { st.innerHTML = `<span class="fs-dot on"></span>Autosaving to <b>${esc(FS.handle.name)}</b> after every check.`; b.style.display = 'none'; }
   else if (FS.handle) { st.innerHTML = `<span class="fs-dot"></span>Connected to <b>${esc(FS.handle.name)}</b>. Chrome will ask to allow edits on your next check.`; b.style.display = 'none'; }
   else { st.innerHTML = `<span class="fs-dot"></span>Autosave: off. Save once and this file will update itself.`; b.style.display = 'none'; }
-  $('btnPdf').textContent = (saveState.dirty > 0 ? `${FS.handle ? 'Save' : 'Save'} scorecard (${saveState.dirty} unsaved)` : (FS.handle ? 'Save scorecard now' : 'Save scorecard (PDF)'));
+  if (!(FS.supported && FS.handle)) $('btnPdf').textContent = saveState.dirty > 0 ? `Save scorecard (${saveState.dirty} unsaved)` : 'Save scorecard (PDF)';
 }
 /* inside an embed (Google Sites) the page has no URL of its own, so open a copy of this document in a real tab */
 function openOwnTab(e) {
@@ -2549,8 +2630,7 @@ async function saveScorecard(why, opts) {
     }
     if (how === 'download') { await _downloadScorecard(); }
     saveState.dirty = 0; saveState.lastSave = Date.now(); refreshSaveUI(); refreshFsUI();
-    if (why) toast(why); else if (how === 'file') toast(`Saved to ${FS.handle.name}`);
-    if (how === 'file') say(`Scorecard saved to ${FS.handle.name}. Keep observing.`);
+    if (why) toast(why); else if (how === 'file' && opts.gesture) toast(`Saved to ${FS.handle.name}`);
   } catch (e) { console.error(e); $('err').textContent = 'The scorecard could not be saved. Try again.'; btn.disabled = false; btn.textContent = old; return false; }
   btn.disabled = false; refreshFsUI(); return how;
 }
@@ -2578,7 +2658,7 @@ function refreshLinkUI() {
   const linked = FS.supported && isLinked();
   $('btnLoad').style.display = linked ? 'none' : ''; $('btnGateLoad').parentElement.style.display = linked ? 'none' : '';
   $('linkNote').style.display = linked ? '' : 'none';
-  if (linked) $('linkNote').innerHTML = `Linked scorecard: <b>${esc((FS.handle || FS.stored).name)}</b>. This device saves into that file. <a href="#" id="btnUnlink">Unlink</a>`;
+  if (linked) $('linkNote').innerHTML = `<a href="#" id="btnUnlink" style="opacity:.55">Unlink this scorecard from this device</a>`;
   const u = $('btnUnlink'); if (u) u.addEventListener('click', async e => { e.preventDefault(); if (!confirm('Unlink this scorecard from this device? The file itself is not deleted. You will pick a file again next time you save.')) return; await fsDel(); FS.handle = null; FS.stored = null; FS.perm = 'none'; refreshFsUI(); refreshLinkUI(); toast('Scorecard unlinked.'); });
 }
 const _refreshFsUI = refreshFsUI; refreshFsUI = function () { _refreshFsUI(); refreshLinkUI(); };
@@ -2593,6 +2673,19 @@ $('btnAutosave').addEventListener('click', async () => { if (FS.handle && await 
   refreshFsUI();
   if (FS.supported) { FS.stored = await fsGet(); } FS._checked = true; refreshLinkUI();
 })();
+
+/* preview: render the current scorecard into the modal (same PDF the file gets) */
+$('btnPreview').addEventListener('click', async () => {
+  if (!state.observations.length) return;
+  const btn = $('btnPreview'); btn.disabled = true; const old = btn.textContent; btn.textContent = 'Building preview...';
+  try {
+    const pages = await buildScorecard();          /* the very same pages the PDF is made from */
+    $('previewBody').innerHTML = pages.map((src, i) => `<div class="pg">Page ${i + 1} of ${pages.length}</div><img src="${src}" alt="Scorecard page ${i + 1}">`).join('');
+    $('previewSub').textContent = (FS.handle ? FS.handle.name + ' · ' : '') + `${state.observations.length} observation${state.observations.length === 1 ? '' : 's'}` + (saveState.dirty > 0 ? ` · ${saveState.dirty} not yet saved to the file` : '');
+    openModal('previewModal'); $('previewBody').scrollTop = 0; setMood('proud', 2000); say('There is your log so far. Every attempt and every note, in your own file.');
+  } catch (e) { console.error(e); toast('Could not build the preview.'); }
+  btn.disabled = false; btn.textContent = old;
+});
 /* ============================================================
    LOCAL BACKUP: instant, no server, for the forgetful student and the dead battery.
    The scorecard PDF stays the record the student owns and submits; this is the safety copy on this device.
@@ -2603,11 +2696,11 @@ function backupNow() {
     if (!state.observations.length) { localStorage.setItem(LS_NAME, $('name').value.trim()); return; }
     const data = exportState(); data.dirty = saveState.dirty; data.file = FS.handle ? FS.handle.name : ''; data.loc = state.loc;
     localStorage.setItem(LS_KEY, JSON.stringify(data)); localStorage.setItem(LS_NAME, data.name || '');
-    $('lsStatus').textContent = 'Backup on this device: ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    $('scBackup').textContent = 'Backup ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
   } catch (e) { /* storage full or blocked: the file and downloads still work */ }
 }
 function readBackup() { try { const d = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); return d && Array.isArray(d.observations) && d.observations.length ? d : null; } catch (e) { return null; } }
-function clearBackup() { try { localStorage.removeItem(LS_KEY); } catch (e) {} $('lsStatus').textContent = ''; }
+function clearBackup() { try { localStorage.removeItem(LS_KEY); } catch (e) {} $('scBackup').textContent = ''; }
 /* hook every change and every save */
 const _markDirty = markDirty; markDirty = function (n) { _markDirty(n); backupNow(); };
 const _saveScorecard = saveScorecard; saveScorecard = async function (why, opts) { const r = await _saveScorecard(why, opts); backupNow(); return r; };
@@ -2676,7 +2769,7 @@ async function resumeSession(auto) {
     if (b.loc && LOCATIONS[b.loc]) state.loc = b.loc;
     saveState.dirty = b.dirty || 0; refreshSaveUI();
     if (typeof refreshFsUI === 'function') refreshFsUI();
-    setMood('happy'); say(`Welcome back${b.name ? ', ' + b.name.split(' ')[0] : ''}! I restored ${n} observation${n === 1 ? '' : 's'} from this device.${fileMsg}`);
+    setMood('happy'); say(`Welcome back aboard${b.name ? ', ' + b.name.split(' ')[0] : ''}! I restored ${n} observation${n === 1 ? '' : 's'} from this device.${fileMsg}`);
     if (typeof fsAutosave === 'function' && saveState.dirty > 0) setTimeout(fsAutosave, 4000);
   } else if (file) {
     try { const f = await FS.handle.getFile(); await loadScorecard(f); if (typeof refreshFsUI === 'function') refreshFsUI(); } catch (e) { console.error(e); return false; }
